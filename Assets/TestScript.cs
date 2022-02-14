@@ -6,7 +6,7 @@ public class TestScript : MonoBehaviour{
     // Start is called before the first frame update
     GridArea grid;
     void Start(){
-        grid = new GridArea(4,2, 10f, new Vector3(20,0));
+        grid = new GridArea(132, 60, 1f, new Vector3(-66, -30));
     }
 
     // Update is called once per frame

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GridArea{
+
     private int width, height;
     private int[,] gridArray;
     private float cellSize;
     private TextMesh[,] debugArray;
     private Vector3 originPosition;
+
     public GridArea(int width, int height, float cellSize,Vector3 originPosition){
         this.width = width;
         this.height = height;
@@ -49,12 +51,11 @@ public class GridArea{
     private void GetXY(Vector3 worldPosition,out int x ,out int y){
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
-
     }
 
     public void SetValue(int x , int y, int value){
         if (x >= 0 && y >= 0 && x < width && y < height){
-            gridArray[x,y] = value;
+            gridArray[x,y]++;
             debugArray[x,y].text = gridArray[x,y].ToString();
         }
     }
