@@ -12,7 +12,7 @@ public class TestScript : MonoBehaviour
     {
         string currentPath = Directory.GetCurrentDirectory();
         int[,] mapValues = readMapData(currentPath + "/Assets/Maps/map 1.csv");
-        grid = new GridArea(88, 40, 1.5f, new Vector3(-66, -30), mapValues);
+        grid = new GridArea(71, 40, 1.5f, new Vector3(-53.25f, -30), mapValues);
     }
 
     // Update is called once per frame
@@ -44,7 +44,7 @@ public class TestScript : MonoBehaviour
         {
             for (int j = 0; j < 40; j++)
             {
-                values[i, j] = int.Parse(stringValues[j][i]);
+                values[i, 39 - j] = int.Parse(stringValues[j][i]);
             }
         }
         return values;

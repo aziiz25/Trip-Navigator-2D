@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using System;
 
 public class GridArea
 {
@@ -17,7 +19,7 @@ public class GridArea
         this.height = height;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
-        this.gridArray = GridValues;
+        this.gridArray = new int[width, height];
         this.debugArray = new TextMesh[width, height];
 
         for (int i = 0; i < width; i++)
@@ -31,6 +33,8 @@ public class GridArea
         }
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+
+
     }
 
     public TextMesh createWorldText(Transform parent = null, string text = "", Vector3 localPosition = default(Vector3), int fontSize = 40, string color = "white", TextAnchor anchor = TextAnchor.UpperLeft, TextAlignment alignment = TextAlignment.Left, int sortingOrder = 5000)
@@ -73,7 +77,6 @@ public class GridArea
         int x, y;
         GetXY(worldPosition, out x, out y);
         SetValue(x, y, value);
-
     }
 
 
