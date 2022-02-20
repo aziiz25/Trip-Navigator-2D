@@ -14,21 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SimpleSelectedItems:
     m_Keys:
-    - .collabignore
     - Assets/GridArea.cs
     - Assets/GridArea.cs.meta
+    - Assets/Icons.meta
+    - Assets/Icons/blue_dot.png
+    - Assets/Icons/blue_dot.png.meta
+    - Assets/Maps.meta
+    - Assets/Maps/map 1.csv
+    - Assets/Maps/map 1.csv.meta
+    - Assets/Maps/map 1.jpeg
+    - Assets/Maps/map 1.jpeg.meta
+    - Assets/PathFinding.cs
+    - Assets/PathFinding.cs.meta
+    - Assets/PathNode.cs
+    - Assets/PathNode.cs.meta
     - Assets/Scenes.meta
     - Assets/Scenes/SampleScene.unity
     - Assets/Scenes/SampleScene.unity.meta
     - Assets/TestScript.cs
     - Assets/TestScript.cs.meta
-    - Packages/manifest.json
-    - Packages/packages-lock.json
-    - ProjectSettings/ProjectSettings.asset
-    - ProjectSettings/ProjectVersion.txt
-    - ProjectSettings/UnityConnectSettings.asset
     - 
-    m_Values: 0000000000000000000000000000
+    m_Values: 0000000000000000000000000000000000000000
   RevisionSummary: 
   ChangesSearchValue: 
   SelectedHistoryRevision: 

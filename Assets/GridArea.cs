@@ -19,14 +19,15 @@ public class GridArea
         this.height = height;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
-        this.gridArray = new int[width, height];
+        //this.gridArray = new int[width, height];
+        this.gridArray = GridValues;
         this.debugArray = new TextMesh[width, height];
 
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                debugArray[i, j] = createWorldText(null, gridArray[i, j].ToString(), GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
+                debugArray[i, j] = createWorldText(null, "", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
@@ -68,8 +69,17 @@ public class GridArea
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
-            gridArray[x, y]++;
-            debugArray[x, y].text = gridArray[x, y].ToString();
+            if (gridArray[x, y] != 0)
+            {
+                //gridArray[x, y]++;
+                //debugArray[x, y].text = gridArray[x, y].ToString();
+                ControlDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(0.75f, 0.75f, 0));
+            }
+            else
+            {
+                nearestPosition(ref x, ref y);
+                ControlDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(0.75f, 0.75f, 0));
+            }
         }
     }
     public void SetValue(Vector3 worldPosition, int value)
@@ -79,14 +89,57 @@ public class GridArea
         SetValue(x, y, value);
     }
 
+    private void nearestPosition(ref int x, ref int y)
+    {
+        int step = 1;
+        while (true)
+        {
+            try
+            { //up
+                if (gridArray[x, y + step] != 0)
+                {
+                    y = y + step;
+                    break;
+                }
+            }
+            catch (Exception e) { }
+            try
+            { //left
+                if (gridArray[x - step, y] != 0)
+                {
+                    x = x - step;
+                    break;
+                }
+            }
+            catch (Exception e) { }
+            try
+            { //down
+                if (gridArray[x, y - step] != 0)
+                {
+                    y = y - step;
+                    break;
+                }
+            }
+            catch (Exception e) { }
+            try
+            { //right
+                if (gridArray[x + step, y] != 0)
+                {
+                    x = x + step;
+                    break;
+                }
+            }
+            catch (Exception e) { }
+            step++;
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
 
     }
-
-
 
     // Update is called once per frame
     void Update()
