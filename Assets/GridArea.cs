@@ -8,17 +8,18 @@ public class GridArea
 {
 
     private int width, height;
-    private int[,] gridArray;
+    private string[,] gridArray;
     private float cellSize;
     private TextMesh[,] debugArray;
     private Vector3 originPosition;
+    private bool isFirstSelected;
 
-    public GridArea(int width, int height, float cellSize, Vector3 originPosition, int[,] GridValues)
+    public GridArea(int width, int height, float cellSize, string[,] GridValues)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
-        this.originPosition = originPosition;
+        this.originPosition = new Vector3(-(width * cellSize / 2), -(height * cellSize / 2) + 6, 0);
         //this.gridArray = new int[width, height];
         this.gridArray = GridValues;
         this.debugArray = new TextMesh[width, height];
@@ -27,7 +28,7 @@ public class GridArea
         {
             for (int j = 0; j < height; j++)
             {
-                debugArray[i, j] = createWorldText(null, "", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
+                debugArray[i, j] = createWorldText(null, /*GridValues[i, j]*/"", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
@@ -69,17 +70,22 @@ public class GridArea
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
-            if (gridArray[x, y] != 0)
+            if (gridArray[x, y].Equals("0"))
             {
-                //gridArray[x, y]++;
-                //debugArray[x, y].text = gridArray[x, y].ToString();
-                ControlDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(0.75f, 0.75f, 0));
+                nearestPosition(ref x, ref y);
+            }
+
+            if (!isFirstSelected)
+            {
+                ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
+                isFirstSelected = true;
             }
             else
             {
-                nearestPosition(ref x, ref y);
-                ControlDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(0.75f, 0.75f, 0));
+                ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
+                isFirstSelected = false;
             }
+
         }
     }
     public void SetValue(Vector3 worldPosition, int value)
@@ -94,42 +100,30 @@ public class GridArea
         int step = 1;
         while (true)
         {
-            try
-            { //up
-                if (gridArray[x, y + step] != 0)
-                {
-                    y = y + step;
-                    break;
-                }
+            //up
+            if (y + step < height - 1 && !gridArray[x, y + step].Equals("0"))
+            {
+                y = y + step;
+                break;
             }
-            catch (Exception e) { }
-            try
-            { //left
-                if (gridArray[x - step, y] != 0)
-                {
-                    x = x - step;
-                    break;
-                }
+            //left
+            if (x - step >= 0 && !gridArray[x - step, y].Equals("0"))
+            {
+                x = x - step;
+                break;
             }
-            catch (Exception e) { }
-            try
-            { //down
-                if (gridArray[x, y - step] != 0)
-                {
-                    y = y - step;
-                    break;
-                }
+            //down
+            if (y - step >= 0 && !gridArray[x, y - step].Equals("0"))
+            {
+                y = y - step;
+                break;
             }
-            catch (Exception e) { }
-            try
-            { //right
-                if (gridArray[x + step, y] != 0)
-                {
-                    x = x + step;
-                    break;
-                }
+            //right
+            if (x + step < width - 1 && !gridArray[x + step, y].Equals("0"))
+            {
+                x = x + step;
+                break;
             }
-            catch (Exception e) { }
             step++;
         }
     }
