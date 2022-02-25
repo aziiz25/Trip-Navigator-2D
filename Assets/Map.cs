@@ -12,7 +12,6 @@ public class Map
 
     public Map(string[][] gridValues, Vector3 start, Vector3 end)
     {
-
         nodes = new List<MapNode>();
         for (int x = 0; x < gridValues.Length; x++)
         {
@@ -80,6 +79,7 @@ public class Map
         {
             Debug.Log(node);
         }
+        printGraph();
 
     }
 
@@ -114,4 +114,25 @@ public class Map
         }
         return temp;
     }
+
+    public void printGraph(){
+        printGraph(nodes[0]);
+    }
+    public void printGraph(MapNode node){
+        if (node == null || node.isVisited == true){
+            return;
+        }else{
+            Debug.Log(node.position.x + " "+ node.position.y);
+            node.isVisited = true;
+            printGraph(node.up);
+            printGraph(node.left);
+            printGraph(node.down);
+            printGraph(node.right);
+        }
+    }
+    public void markUnvisited(){
+        foreach (MapNode node in nodes){
+            node.isVisited = false;
+        }
+    }   
 }
