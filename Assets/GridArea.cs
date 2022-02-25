@@ -8,13 +8,16 @@ public class GridArea
 {
 
     private int width, height;
-    private string[,] gridArray;
+    private string[][] gridArray;
     private float cellSize;
     private TextMesh[,] debugArray;
     private Vector3 originPosition;
     private bool isFirstSelected;
 
-    public GridArea(int width, int height, float cellSize, string[,] GridValues)
+    private Vector3 start;
+    private Vector3 end;
+
+    public GridArea(int width, int height, float cellSize, string[][] GridValues)
     {
         this.width = width;
         this.height = height;
@@ -70,20 +73,27 @@ public class GridArea
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
-            if (gridArray[x, y].Equals("0"))
+            if (gridArray[x][y].Equals("0"))
             {
                 nearestPosition(ref x, ref y);
             }
-
-            if (!isFirstSelected)
+            // Debug.Log("x: " + x + " y: " + y);
+            if (!gridArray[x][y].Equals("0"))
             {
-                ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
-                isFirstSelected = true;
-            }
-            else
-            {
-                ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
-                isFirstSelected = false;
+                if (!isFirstSelected)
+                {
+                    ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
+                    isFirstSelected = true;
+                    start = new Vector3(x, y, 0);
+                    // Debug.Log("x: " + x + " y: " + y);
+                }
+                else
+                {
+                    ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
+                    isFirstSelected = false;
+                    end = new Vector3(x, y, 0);
+                    var map = new Map(gridArray, start, end);
+                }
             }
 
         }
@@ -98,33 +108,41 @@ public class GridArea
     private void nearestPosition(ref int x, ref int y)
     {
         int step = 1;
-        while (true)
+        while (step < width)
         {
-            //up
-            if (y + step < height - 1 && !gridArray[x, y + step].Equals("0"))
+            try
             {
-                y = y + step;
+                //up
+                if (y + step < height - 1 && !gridArray[x][y + step].Equals("0"))
+                {
+                    y = y + step;
+                    break;
+                }
+                //left
+                if (x - step >= 0 && !gridArray[x - step][y].Equals("0"))
+                {
+                    x = x - step;
+                    break;
+                }
+                //down
+                if (y - step >= 0 && !gridArray[x][y - step].Equals("0"))
+                {
+                    y = y - step;
+                    break;
+                }
+                //right
+                if (x + step < width - 1 && !gridArray[x + step][y].Equals("0"))
+                {
+                    x = x + step;
+                    break;
+                }
+                step++;
+            }
+            catch (Exception e)
+            {
+                // Debug.Log(step);
                 break;
             }
-            //left
-            if (x - step >= 0 && !gridArray[x - step, y].Equals("0"))
-            {
-                x = x - step;
-                break;
-            }
-            //down
-            if (y - step >= 0 && !gridArray[x, y - step].Equals("0"))
-            {
-                y = y - step;
-                break;
-            }
-            //right
-            if (x + step < width - 1 && !gridArray[x + step, y].Equals("0"))
-            {
-                x = x + step;
-                break;
-            }
-            step++;
         }
     }
 

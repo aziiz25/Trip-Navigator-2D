@@ -11,7 +11,7 @@ public class TestScript : MonoBehaviour
     void Start()
     {
         string currentPath = Directory.GetCurrentDirectory();
-        string[,] mapValues = readMapData(currentPath + "/Assets/Maps/map 1.csv");
+        string[][] mapValues = readMapData(currentPath + "/Assets/Maps/map 1.csv");
         grid = new GridArea(88, 40, 1.2f, mapValues);
     }
 
@@ -31,9 +31,9 @@ public class TestScript : MonoBehaviour
         return vec;
     }
 
-    public string[,] readMapData(string filePath)
+    public string[][] readMapData(string filePath)
     {
-        string[,] values = new string[88, 40];
+        string[][] values = new string[88][];
         string[] text = System.IO.File.ReadAllLines(@filePath);
         string[][] stringValues = new string[40][];
         for (int i = 0; i < 40; i++)
@@ -42,9 +42,10 @@ public class TestScript : MonoBehaviour
         }
         for (int i = 0; i < 88; i++)
         {
+            values[i] = new string[40];
             for (int j = 0; j < 40; j++)
             {
-                values[i, 39 - j] = stringValues[j][i];
+                values[i][39 - j] = stringValues[j][i];
             }
         }
         return values;

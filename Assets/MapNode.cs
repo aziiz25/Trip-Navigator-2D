@@ -14,5 +14,8 @@ public class MapNode
     public float leftCost { get; set; }
     public float rightCost { get; set; }
 
-
+    public MapNode(Vector3 position)
+    {
+        this.position = position;
+    }
 }
