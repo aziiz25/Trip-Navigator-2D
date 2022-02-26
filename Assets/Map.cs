@@ -20,6 +20,11 @@ public class Map
                 if (gridValues[x][y].Equals("1") || x == start.x && y == start.y || x == end.x && y == end.y)
                 {
                     var current = new MapNode(new Vector3(x, y, 0));
+                    if( x == start.x && y == start.y){
+                        this.start = current;
+                    }else if (x == end.x && y == end.y){
+                        this.end = current;
+                    }
                     MapNode tempLeft = null;
                     MapNode tempDown = null;
                     if (x - 1 >= 0 && !gridValues[x - 1][y].Equals("0"))

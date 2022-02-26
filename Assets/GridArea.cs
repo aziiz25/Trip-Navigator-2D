@@ -93,6 +93,7 @@ public class GridArea
                     isFirstSelected = false;
                     end = new Vector3(x, y, 0);
                     var map = new Map(gridArray, start, end);
+                    Astar path = new Astar(map);
                 }
             }
 

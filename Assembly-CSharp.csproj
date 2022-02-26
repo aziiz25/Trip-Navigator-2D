@@ -42,6 +42,8 @@
      <Compile Include="Assets\GridArea.cs" />
      <Compile Include="Assets\TestScript.cs" />
      <Compile Include="Assets\Map.cs" />
+     <Compile Include="Assets\Astar.cs" />
+     <Compile Include="Assets\PriorityQueue.cs" />
     <Reference Include="UnityEngine">
         <HintPath>D:\FCIT\الترم التاسع\CPCS-498\unity engine\2020.3.27f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
