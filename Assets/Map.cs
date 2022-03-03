@@ -17,14 +17,16 @@ public class Map
         {
             for (int y = 0; y < gridValues[x].Length; y++)
             {
-                if (gridValues[x][y].Equals("1") || x == start.x && y == start.y || x == end.x && y == end.y)
+                if (gridValues[x][y].Equals("1")  || x == start.x && y == start.y || x == end.x && y == end.y)
                 {
                     var current = new MapNode(new Vector3(x, y, 0));
-                    if( x == start.x && y == start.y){
+                    if( current.position.x == start.x && current.position.y == start.y){
                         this.start = current;
-                    }else if (x == end.x && y == end.y){
+                    }
+                    else if (current.position.x == end.x && current.position.y == end.y){
                         this.end = current;
                     }
+
                     MapNode tempLeft = null;
                     MapNode tempDown = null;
                     if (x - 1 >= 0 && !gridValues[x - 1][y].Equals("0"))
@@ -38,9 +40,9 @@ public class Map
                         {
                             current.left = tempLeft;
                             current.leftCost = weight;
-
                             tempLeft.right = current;
                             tempLeft.rightCost = weight;
+
                         }
                         else if (gridValues[x - 1][y][1] == 'L')
                         {
@@ -74,18 +76,11 @@ public class Map
                             tempDown.up = current;
                             tempDown.upCost = weight;
                         }
-                    }
-
+                    }   
                     nodes.Add(current);
                 }
             }
         }
-        foreach (var node in nodes)
-        {
-            Debug.Log(node);
-        }
-        printGraph();
-
     }
 
     private MapNode getLeft(int x, int y)
@@ -119,7 +114,7 @@ public class Map
         }
         return temp;
     }
-
+    
     public void printGraph(){
         printGraph(nodes[0]);
     }
