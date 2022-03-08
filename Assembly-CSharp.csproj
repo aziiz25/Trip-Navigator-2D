@@ -41,6 +41,7 @@
      <Compile Include="Assets\Astar.cs" />
      <Compile Include="Assets\ControlSecondDot.cs" />
      <Compile Include="Assets\GridArea.cs" />
+     <Compile Include="Assets\DrawPath.cs" />
      <Compile Include="Assets\TestScript.cs" />
      <Compile Include="Assets\Map.cs" />
     <Reference Include="UnityEngine">

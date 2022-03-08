@@ -13,6 +13,7 @@ public class ControlFirstDot : MonoBehaviour
 
     public static ControlFirstDot Instance { get { return _instance; } }
 
+    public TestScript test;
     private void Awake()
     {
         if (_instance != null && _instance != this)
