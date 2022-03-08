@@ -11,7 +11,7 @@ public class TestScript : MonoBehaviour
     void Start()
     {
         string currentPath = Directory.GetCurrentDirectory();
-        string[][] mapValues = readMapData(currentPath + "/Assets/Maps/map 1.csv");
+        string[][] mapValues = readMapData(currentPath + "/Assets/Maps/test.csv");
         grid = new GridArea(88, 40, 1.2f, mapValues);
     }
 
