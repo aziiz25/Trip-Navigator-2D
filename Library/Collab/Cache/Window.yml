@@ -14,27 +14,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SimpleSelectedItems:
     m_Keys:
+    - .collabignore
+    - Assets/Astar.cs
+    - Assets/Astar.cs.meta
+    - Assets/ControlFirstDot.cs
+    - Assets/ControlFirstDot.cs.meta
+    - Assets/ControlSecondDot.cs
+    - Assets/ControlSecondDot.cs.meta
+    - Assets/DrawPath.cs
+    - Assets/DrawPath.cs.meta
     - Assets/GridArea.cs
     - Assets/GridArea.cs.meta
     - Assets/Icons.meta
     - Assets/Icons/blue_dot.png
     - Assets/Icons/blue_dot.png.meta
+    - Assets/Icons/red_dot.png
+    - Assets/Icons/red_dot.png.meta
+    - Assets/Map.cs
+    - Assets/Map.cs.meta
+    - Assets/MapNode.cs
+    - Assets/MapNode.cs.meta
     - Assets/Maps.meta
     - Assets/Maps/map 1.csv
     - Assets/Maps/map 1.csv.meta
     - Assets/Maps/map 1.jpeg
     - Assets/Maps/map 1.jpeg.meta
-    - Assets/PathFinding.cs
-    - Assets/PathFinding.cs.meta
-    - Assets/PathNode.cs
-    - Assets/PathNode.cs.meta
+    - Assets/Maps/map 1.xlsx
+    - Assets/Maps/map 1.xlsx.meta
+    - Assets/Maps/test.csv
+    - Assets/Maps/test.csv.meta
+    - Assets/Maps/test.xlsx
+    - Assets/Maps/test.xlsx.meta
+    - Assets/MoveSquare.cs
+    - Assets/MoveSquare.cs.meta
+    - Assets/Path.prefab
+    - Assets/Path.prefab.meta
     - Assets/Scenes.meta
     - Assets/Scenes/SampleScene.unity
     - Assets/Scenes/SampleScene.unity.meta
     - Assets/TestScript.cs
     - Assets/TestScript.cs.meta
+    - Packages/manifest.json
+    - Packages/packages-lock.json
+    - ProjectSettings/ProjectSettings.asset
+    - ProjectSettings/ProjectVersion.txt
+    - ProjectSettings/TagManager.asset
+    - ProjectSettings/UnityConnectSettings.asset
     - 
-    m_Values: 0000000000000000000000000000000000000000
+    m_Values: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   RevisionSummary: 
   ChangesSearchValue: 
   SelectedHistoryRevision: 

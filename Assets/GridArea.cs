@@ -4,21 +4,20 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-public class GridArea
-{
+public class GridArea {
 
     private int width, height;
     private string[][] gridArray;
-    private float cellSize;
+    public float cellSize;
     private TextMesh[,] debugArray;
     private Vector3 originPosition;
-    private bool isFirstSelected;
+    public bool isFirstSelected;
 
-    private Vector3 start;
-    private Vector3 end;
+    public Vector3 start;
+    public Vector3 end;
 
-    public GridArea(int width, int height, float cellSize, string[][] GridValues)
-    {
+    public Astar path;
+    public GridArea(int width, int height, float cellSize, string[][] GridValues) {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
@@ -26,24 +25,18 @@ public class GridArea
         //this.gridArray = new int[width, height];
         this.gridArray = GridValues;
         this.debugArray = new TextMesh[width, height];
-
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                debugArray[i, j] = createWorldText(null, /*GridValues[i, j]*/"", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                debugArray[i, j] = createWorldText(null, /*GridValues[i][j]*/ "", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
         }
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
-
-
     }
 
-    public TextMesh createWorldText(Transform parent = null, string text = "", Vector3 localPosition = default(Vector3), int fontSize = 40, string color = "white", TextAnchor anchor = TextAnchor.UpperLeft, TextAlignment alignment = TextAlignment.Left, int sortingOrder = 5000)
-    {
+    public TextMesh createWorldText(Transform parent = null, string text = "", Vector3 localPosition = default(Vector3), int fontSize = 40, string color = "white", TextAnchor anchor = TextAnchor.UpperLeft, TextAlignment alignment = TextAlignment.Left, int sortingOrder = 5000) {
         GameObject gameObject = new GameObject("world text", typeof(TextMesh));
         Transform transform = gameObject.transform;
         transform.SetParent(parent, false);
@@ -58,106 +51,74 @@ public class GridArea
         return textMesh;
     }
 
-    private Vector3 GetWorldPosition(int x, int y)
-    {
+    public Vector3 GetWorldPosition(int x, int y) {
         return new Vector3(x, y) * cellSize + originPosition;
     }
 
-    private void GetXY(Vector3 worldPosition, out int x, out int y)
-    {
+    private void GetXY(Vector3 worldPosition, out int x, out int y) {
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
     }
 
-    public void SetValue(int x, int y, int value)
-    {
-        if (x >= 0 && y >= 0 && x < width && y < height)
-        {
-            if (gridArray[x][y].Equals("0"))
-            {
+    public void SetValue(int x, int y, int value) {
+        if (x >= 0 && y >= 0 && x < width && y < height) {
+            if (gridArray[x][y].Equals("0")) {
                 nearestPosition(ref x, ref y);
             }
-            // Debug.Log("x: " + x + " y: " + y);
-            if (!gridArray[x][y].Equals("0"))
-            {
-                if (!isFirstSelected)
-                {
+            if (!gridArray[x][y].Equals("0")) {
+                if (!isFirstSelected) {
                     ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     isFirstSelected = true;
                     start = new Vector3(x, y, 0);
-                    // Debug.Log("x: " + x + " y: " + y);
-                }
-                else
-                {
+                } else {
                     ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     isFirstSelected = false;
                     end = new Vector3(x, y, 0);
-                    var map = new Map(gridArray, start, end);
+                    this.path = create_path();
                 }
             }
-
         }
     }
-    public void SetValue(Vector3 worldPosition, int value)
-    {
+    public void SetValue(Vector3 worldPosition, int value) {
         int x, y;
         GetXY(worldPosition, out x, out y);
         SetValue(x, y, value);
     }
 
-    private void nearestPosition(ref int x, ref int y)
-    {
+    private void nearestPosition(ref int x, ref int y) {
         int step = 1;
-        while (step < width)
-        {
-            try
-            {
+        while (step < width) {
+            try {
                 //up
-                if (y + step < height - 1 && !gridArray[x][y + step].Equals("0"))
-                {
+                if (y + step < height - 1 && !gridArray[x][y + step].Equals("0")) {
                     y = y + step;
                     break;
                 }
                 //left
-                if (x - step >= 0 && !gridArray[x - step][y].Equals("0"))
-                {
+                if (x - step >= 0 && !gridArray[x - step][y].Equals("0")) {
                     x = x - step;
                     break;
                 }
                 //down
-                if (y - step >= 0 && !gridArray[x][y - step].Equals("0"))
-                {
+                if (y - step >= 0 && !gridArray[x][y - step].Equals("0")) {
                     y = y - step;
                     break;
                 }
                 //right
-                if (x + step < width - 1 && !gridArray[x + step][y].Equals("0"))
-                {
+                if (x + step < width - 1 && !gridArray[x + step][y].Equals("0")) {
                     x = x + step;
                     break;
                 }
                 step++;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 // Debug.Log(step);
                 break;
             }
         }
     }
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
+    private Astar create_path() {
+        Map map = new Map(gridArray, start, end);
+        return new Astar(map);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
 }

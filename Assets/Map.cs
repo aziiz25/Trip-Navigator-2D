@@ -12,15 +12,21 @@ public class Map
 
     public Map(string[][] gridValues, Vector3 start, Vector3 end)
     {
-
         nodes = new List<MapNode>();
         for (int x = 0; x < gridValues.Length; x++)
         {
             for (int y = 0; y < gridValues[x].Length; y++)
             {
-                if (gridValues[x][y].Equals("1") || x == start.x && y == start.y || x == end.x && y == end.y)
+                if (gridValues[x][y].Equals("1")  || x == start.x && y == start.y || x == end.x && y == end.y)
                 {
                     var current = new MapNode(new Vector3(x, y, 0));
+                    if( current.position.x == start.x && current.position.y == start.y){
+                        this.start = current;
+                    }
+                    else if (current.position.x == end.x && current.position.y == end.y){
+                        this.end = current;
+                    }
+
                     MapNode tempLeft = null;
                     MapNode tempDown = null;
                     if (x - 1 >= 0 && !gridValues[x - 1][y].Equals("0"))
@@ -34,9 +40,9 @@ public class Map
                         {
                             current.left = tempLeft;
                             current.leftCost = weight;
-
                             tempLeft.right = current;
                             tempLeft.rightCost = weight;
+
                         }
                         else if (gridValues[x - 1][y][1] == 'L')
                         {
@@ -70,17 +76,11 @@ public class Map
                             tempDown.up = current;
                             tempDown.upCost = weight;
                         }
-                    }
-
+                    }   
                     nodes.Add(current);
                 }
             }
         }
-        foreach (var node in nodes)
-        {
-            Debug.Log(node);
-        }
-
     }
 
     private MapNode getLeft(int x, int y)
@@ -114,4 +114,25 @@ public class Map
         }
         return temp;
     }
+    
+    public void printGraph(){
+        printGraph(nodes[0]);
+    }
+    public void printGraph(MapNode node){
+        if (node == null || node.isVisited == true){
+            return;
+        }else{
+            Debug.Log(node.position.x + " "+ node.position.y);
+            node.isVisited = true;
+            printGraph(node.up);
+            printGraph(node.left);
+            printGraph(node.down);
+            printGraph(node.right);
+        }
+    }
+    public void markUnvisited(){
+        foreach (MapNode node in nodes){
+            node.isVisited = false;
+        }
+    }   
 }
