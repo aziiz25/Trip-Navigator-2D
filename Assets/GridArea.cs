@@ -111,7 +111,7 @@ public class GridArea {
                 }
                 step++;
             } catch (Exception e) {
-                // Debug.Log(step);
+                Debug.Log(e);
                 break;
             }
         }
