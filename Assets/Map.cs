@@ -76,6 +76,10 @@ public class Map
                 }
             }
         }
+        foreach (var node in nodes)
+        {
+            Debug.Log(node);
+        }
 
     }
 

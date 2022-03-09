@@ -31,13 +31,14 @@ public class GridArea
         {
             for (int j = 0; j < height; j++)
             {
-                debugArray[i, j] = createWorldText(null, /*GridValues[i][j]*/"", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
+                debugArray[i, j] = createWorldText(null, /*GridValues[i, j]*/"", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
         }
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+
 
     }
 
@@ -139,7 +140,7 @@ public class GridArea
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                // Debug.Log(step);
                 break;
             }
         }
