@@ -21,6 +21,7 @@ public class Astar {
         this.end = map.end;
         this.map = map;
         find();
+        cleanPath();
     }
 
     public void find() {
@@ -89,7 +90,7 @@ public class Astar {
         }
     }
 
-    public void get_optimal_path(){
+    public void get_optimal_path() {
         path.Add(closed[closed.Count - 1].Key);
         MapNode prev = closed[closed.Count - 1].Value;
         closed.Remove(closed[closed.Count - 1]);
@@ -112,6 +113,22 @@ public class Astar {
     public double total_cost(MapNode node, double cost) {
         // for now its just g(n)
         return 0;
+    }
+
+    private void cleanPath() {
+        if (path.Count < 3) return;
+
+        for (int i = 1; i < path.Count - 1; i++) {
+            MapNode prev = path[i - 1];
+            MapNode curr = path[i];
+            MapNode next = path[i + 1];
+            if (prev.position.x == next.position.x ||
+                prev.position.y == next.position.y) {
+                path.RemoveAt(i);
+                i--;
+            }
+
+        }
     }
 
 }

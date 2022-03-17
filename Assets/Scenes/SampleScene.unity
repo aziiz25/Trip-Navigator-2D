@@ -618,4 +618,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   draw_road: []
-  road: {fileID: 1425794309883143777, guid: cfbdf6acf40ba9a459922c7f0d93555d, type: 3}

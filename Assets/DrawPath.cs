@@ -10,8 +10,6 @@ public class DrawPath : MonoBehaviour {
 
     public List<GameObject> draw_road;
 
-    public GameObject road;
-
     Astar path_finding;
     // Start is called before the first frame update
     void Start() {
@@ -40,45 +38,35 @@ public class DrawPath : MonoBehaviour {
         }
     }
 
-    public Vector3 set_position(int x, int y) {
+    public Vector3 get_position(float x, float y) {
         return grid.GetWorldPosition(x, y) + new Vector3(grid.cellSize / 2, grid.cellSize / 2);
     }
 
-
-    //not working as intended; :(
-    public void draw() {
+    void draw() {
         if (path_finding != null) {
             for (int i = 0; i < path_finding.path.Count - 1; i++) {
-                float dx = path_finding.path[i].position.x - path_finding.path[i + 1].position.x;
-                float dy = path_finding.path[i].position.y - path_finding.path[i + 1].position.y;
-                if (dx == 0) {
-                    int x = (int)(path_finding.path[i].position.x);
-                    int y = (int)(path_finding.path[i].position.y - dy / 2);
-                    if (dy < 0) {
-                        //up
-                        add_road(x, y, 0.5f, (dy * -1) + 1f);
-                    } else if (dy > 0) {
-                        // down
-                        add_road(x, y, 0.5f, (dy * +1) + 1f);
-                    }
-                } else {
-                    int x = (int)(path_finding.path[i].position.x - dx / 2);
-                    int y = (int)path_finding.path[i].position.y;
-                    if (dx < 0) {
-                        // left 
-                        add_road(x, y, (dx * -1) + 1, 0.5f);
-                    } else {
-                        // right
-                        add_road(x, y, (dx * +1));
-                    }
-                }
+                Vector3 start = get_position(path_finding.path[i].position.x, path_finding.path[i].position.y);
+                Vector3 end = get_position(path_finding.path[i + 1].position.x, path_finding.path[i + 1].position.y);
+                DrawLine(start, end);
             }
         }
     }
-    void add_road(int x, int y, float dx = 0.5f, float dy = 0.5f) {
-        GameObject lane = Instantiate(road);
-        lane.transform.position = set_position(x, y);
-        lane.transform.localScale = new Vector3(dx, dy, 0f);
-        draw_road.Add(lane);
+
+    void DrawLine(Vector3 start, Vector3 end) {
+        Color color = Color.green;
+        GameObject myLine = new GameObject();
+        myLine.transform.position = start;
+        myLine.AddComponent<LineRenderer>();
+        LineRenderer lr = myLine.GetComponent<LineRenderer>();
+        lr.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended"));
+        lr.startColor = color;
+        lr.endColor = color;
+        lr.startWidth = 0.55f;
+        lr.endWidth = 0.55f;
+        lr.SetPosition(0, start);
+        lr.SetPosition(1, end);
+        //GameObject.Destroy(myLine, duration);
+        draw_road.Add(myLine);
     }
 }
+

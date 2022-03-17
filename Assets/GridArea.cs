@@ -51,7 +51,7 @@ public class GridArea {
         return textMesh;
     }
 
-    public Vector3 GetWorldPosition(int x, int y) {
+    public Vector3 GetWorldPosition(float x, float y) {
         return new Vector3(x, y) * cellSize + originPosition;
     }
 
