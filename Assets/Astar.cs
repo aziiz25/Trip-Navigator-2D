@@ -21,6 +21,7 @@ public class Astar {
         this.end = map.end;
         this.map = map;
         find();
+        path.Reverse();
         cleanPath();
     }
 
@@ -43,6 +44,7 @@ public class Astar {
             add_to_close();
         }
         get_optimal_path();
+
     }
 
     public void update_adj_nodes(double prev_cost) {
