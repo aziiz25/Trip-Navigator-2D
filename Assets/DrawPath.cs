@@ -33,6 +33,7 @@ public class DrawPath : MonoBehaviour {
                     foreach (GameObject draw in draw_road) {
                         Destroy(draw);
                     }
+                    draw_road.Clear();
                 }
             }
         }
@@ -65,7 +66,6 @@ public class DrawPath : MonoBehaviour {
         lr.endWidth = 0.55f;
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
-        //GameObject.Destroy(myLine, duration);
         draw_road.Add(myLine);
     }
 }

@@ -26,6 +26,8 @@ MonoBehaviour:
     - Assets/GridArea.cs
     - Assets/GridArea.cs.meta
     - Assets/Icons.meta
+    - Assets/Icons/Car-red.png
+    - Assets/Icons/Car-red.png.meta
     - Assets/Icons/blue_dot.png
     - Assets/Icons/blue_dot.png.meta
     - Assets/Icons/red_dot.png
@@ -37,18 +39,16 @@ MonoBehaviour:
     - Assets/Maps.meta
     - Assets/Maps/map 1.csv
     - Assets/Maps/map 1.csv.meta
-    - Assets/Maps/map 1.jpeg
-    - Assets/Maps/map 1.jpeg.meta
+    - Assets/Maps/map 1.jpg
+    - Assets/Maps/map 1.jpg.meta
     - Assets/Maps/map 1.xlsx
     - Assets/Maps/map 1.xlsx.meta
     - Assets/Maps/test.csv
     - Assets/Maps/test.csv.meta
     - Assets/Maps/test.xlsx
     - Assets/Maps/test.xlsx.meta
-    - Assets/MoveSquare.cs
-    - Assets/MoveSquare.cs.meta
-    - Assets/Path.prefab
-    - Assets/Path.prefab.meta
+    - Assets/PathFollower.cs
+    - Assets/PathFollower.cs.meta
     - Assets/Scenes.meta
     - Assets/Scenes/SampleScene.unity
     - Assets/Scenes/SampleScene.unity.meta
