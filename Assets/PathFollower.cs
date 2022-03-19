@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFollower : MonoBehaviour {     // put the points from unity interface
+public class PathFollower : MonoBehaviour {  
 
     public List<MapNode> path;
     public int currentWayPoint = 1;
@@ -34,7 +34,7 @@ public class PathFollower : MonoBehaviour {     // put the points from unity int
             grid = script.grid;
         }
         if (grid != null) {
-            // i want the square to appear after the path is found
+            // i want the car to appear after the path is found
             if (grid.path != null) {
                 path = grid.path.path;
                 //defult is not null for vector its 0 0 0 :))))
@@ -71,12 +71,13 @@ public class PathFollower : MonoBehaviour {     // put the points from unity int
         // move towards the next waypoint
         player.transform.position = Vector3.MoveTowards(player.transform.position, targetWayPoint, speed * Time.deltaTime);
 
-        // rotate towards the next waypoint !!! not working me dont know how 
+        // rotate towards the next waypoint !!! not working me dont know how  Heeeeeeeeeeelp!!!!! :(
+
         //Vector3 newDirection = get_position(Vector3.RotateTowards(player.transform.forward, targetWayPoint - player.transform.position, speed *Time.deltaTime, 0.0f));
         //player.transform.rotation = Quaternion.LookRotation(newDirection);
-        if(player.transform.position.Equals(targetWayPoint) && !this.end.Equals(player.transform.position)){
-        currentWayPoint++;
-        targetWayPoint = get_position(path[currentWayPoint].position);
+        if (player.transform.position.Equals(targetWayPoint) && !this.end.Equals(player.transform.position)) {
+            currentWayPoint++;
+            targetWayPoint = get_position(path[currentWayPoint].position);
         }
     }
 
