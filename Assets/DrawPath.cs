@@ -48,13 +48,13 @@ public class DrawPath : MonoBehaviour {
             for (int i = 0; i < path_finding.path.Count - 1; i++) {
                 Vector3 start = get_position(path_finding.path[i].position.x, path_finding.path[i].position.y);
                 Vector3 end = get_position(path_finding.path[i + 1].position.x, path_finding.path[i + 1].position.y);
-                DrawLine(start, end);
+                var line = DrawLine(start, end, Color.green);
+                draw_road.Add(line);
             }
         }
     }
 
-    void DrawLine(Vector3 start, Vector3 end) {
-        Color color = Color.green;
+    GameObject DrawLine(Vector3 start, Vector3 end, Color color, float width = 0.55f) {
         GameObject myLine = new GameObject();
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();
@@ -62,11 +62,11 @@ public class DrawPath : MonoBehaviour {
         lr.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended"));
         lr.startColor = color;
         lr.endColor = color;
-        lr.startWidth = 0.55f;
-        lr.endWidth = 0.55f;
+        lr.startWidth = width;
+        lr.endWidth = width;
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
-        draw_road.Add(myLine);
+        return myLine;
     }
 }
 
