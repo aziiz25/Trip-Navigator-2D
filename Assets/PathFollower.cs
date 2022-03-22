@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFollower : MonoBehaviour {  
+public class PathFollower : MonoBehaviour {
 
     public List<MapNode> path;
     public int currentWayPoint = 1;
@@ -75,6 +75,13 @@ public class PathFollower : MonoBehaviour {
 
         //Vector3 newDirection = get_position(Vector3.RotateTowards(player.transform.forward, targetWayPoint - player.transform.position, speed *Time.deltaTime, 0.0f));
         //player.transform.rotation = Quaternion.LookRotation(newDirection);
+
+
+        var relativePos = targetWayPoint - player.transform.position;
+        var angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+        var rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        player.transform.rotation = rotation;
+
         if (player.transform.position.Equals(targetWayPoint) && !this.end.Equals(player.transform.position)) {
             currentWayPoint++;
             targetWayPoint = get_position(path[currentWayPoint].position);
