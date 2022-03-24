@@ -38,23 +38,32 @@ public class PathFollower : MonoBehaviour {
             if (grid.path != null) {
                 path = grid.path.path;
                 //defult is not null for vector its 0 0 0 :))))
-                if (start.Equals(end)) {
-                    start = get_position(grid.path.start.position);
-                    end = get_position(grid.path.end.position);
+                if (is_start_end_defult(start, end)) {
+                    start = get_position(grid.start);
+                    end = get_position(grid.end);
                     player.transform.position = start;
                 }
                 if (!grid.isFirstSelected) {
                     targetWayPoint = get_position(this.path[currentWayPoint].position);
                     move();
                 } else {
-                    start = new Vector3();
-                    end = new Vector3();
-                    currentWayPoint = 1;
+                    if (grid.isFirstSelected) {
+                        start = new Vector3();
+                        end = new Vector3();
+                        currentWayPoint = 1;
+                    }
                 }
             }
         }
     }
 
+
+    public bool is_start_end_defult(Vector3 start, Vector3 end) {
+        if (start.x == 0 && start.y == 0 && end.x == 0 && end.y == 0) {
+            return true;
+        }
+        return false;
+    }
     public Vector3 get_position(Vector3 vector) {
         return get_position(vector.x, vector.y);
     }
@@ -73,15 +82,13 @@ public class PathFollower : MonoBehaviour {
 
         // rotate towards the next waypoint !!! not working me dont know how  Heeeeeeeeeeelp!!!!! :(
 
-        //Vector3 newDirection = get_position(Vector3.RotateTowards(player.transform.forward, targetWayPoint - player.transform.position, speed *Time.deltaTime, 0.0f));
-        //player.transform.rotation = Quaternion.LookRotation(newDirection);
-
-
-        var relativePos = targetWayPoint - player.transform.position;
-        var angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
-        var rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        player.transform.rotation = rotation;
-
+        Vector3 relativePos = targetWayPoint - player.transform.position;
+        if (!relativePos.Equals(new Vector3())) {
+            float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+            Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            player.transform.rotation = rotation;
+        }
+        
         if (player.transform.position.Equals(targetWayPoint) && !this.end.Equals(player.transform.position)) {
             currentWayPoint++;
             targetWayPoint = get_position(path[currentWayPoint].position);

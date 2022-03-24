@@ -13,6 +13,7 @@ public class GridArea {
     private Vector3 originPosition;
     public bool isFirstSelected;
 
+
     public Vector3 start;
     public Vector3 end;
 
