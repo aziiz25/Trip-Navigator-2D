@@ -7,6 +7,7 @@ public class Map {
     public MapNode end { get; set; }
     public List<MapNode> nodes { get; set; }
 
+    float speedFactor = 3f;
 
 
     public Map(string[][] gridValues, Vector3 start, Vector3 end) {
@@ -28,35 +29,45 @@ public class Map {
                     if (y - 1 >= 0 && !gridValues[x][y - 1].Equals("0"))
                         tempDown = getDown(x, y);
                     if (tempLeft != null) {
-                        var weight = current.position.x - tempLeft.position.x;
+                        float distance = current.position.x - tempLeft.position.x;
+                        float speed = float.Parse(gridValues[x - 1][y].Substring(0, 1)) * speedFactor;
+                        float time = distance / speed;
                         if (gridValues[x - 1][y].Length == 1) {
                             current.left = tempLeft;
-                            current.leftCost = weight;
+                            current.leftCost = time;
+                            current.leftSpeed = speed;
                             tempLeft.right = current;
-                            tempLeft.rightCost = weight;
-
+                            tempLeft.rightCost = time;
+                            tempLeft.rightSpeed = speed;
                         } else if (gridValues[x - 1][y][1] == 'L') {
                             current.left = tempLeft;
-                            current.leftCost = weight;
+                            current.leftCost = time;
+                            current.leftSpeed = speed;
                         } else {
                             tempLeft.right = current;
-                            tempLeft.rightCost = weight;
+                            tempLeft.rightCost = time;
+                            tempLeft.rightSpeed = speed;
                         }
                     }
                     if (tempDown != null) {
-                        var weight = current.position.y - tempDown.position.y;
+                        float distance = current.position.y - tempDown.position.y;
+                        float speed = float.Parse(gridValues[x][y - 1].Substring(0, 1)) * speedFactor;
+                        float time = distance / speed;
                         if (gridValues[x][y - 1].Length == 1) {
                             current.down = tempDown;
-                            current.downCost = weight;
-
+                            current.downCost = time;
+                            current.downSpeed = speed;
                             tempDown.up = current;
-                            tempDown.upCost = weight;
+                            tempDown.upCost = time;
+                            tempDown.upSpeed = speed;
                         } else if (gridValues[x][y - 1][1] == 'D') {
                             current.down = tempDown;
-                            current.downCost = weight;
+                            current.downCost = time;
+                            current.downSpeed = speed;
                         } else {
                             tempDown.up = current;
-                            tempDown.upCost = weight;
+                            tempDown.upCost = time;
+                            tempDown.upSpeed = speed;
                         }
                     }
                     nodes.Add(current);

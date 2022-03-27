@@ -45,6 +45,7 @@ public class PathFollower : MonoBehaviour {
                 }
                 if (!grid.isFirstSelected) {
                     targetWayPoint = get_position(this.path[currentWayPoint].position);
+                    maxSpeed = getSpeed(currentWayPoint);
                     move();
                 } else {
                     if (grid.isFirstSelected) {
@@ -57,6 +58,25 @@ public class PathFollower : MonoBehaviour {
         }
     }
 
+    private float getSpeed(int targetIndex) {
+        var current = this.path[targetIndex - 1];
+        var next = this.path[targetIndex];
+        float speed;
+        if (next.position.x - current.position.x == 0) {
+            if (next.position.y - current.position.y > 0) {
+                speed = current.upSpeed;
+            } else {
+                speed = current.downSpeed;
+            }
+        } else {
+            if (next.position.x - current.position.x > 0) {
+                speed = current.rightSpeed;
+            } else {
+                speed = current.leftSpeed;
+            }
+        }
+        return speed;
+    }
 
     public bool is_start_end_defult(Vector3 start, Vector3 end) {
         if (start.x == 0 && start.y == 0 && end.x == 0 && end.y == 0) {
@@ -88,7 +108,6 @@ public class PathFollower : MonoBehaviour {
             Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             player.transform.rotation = rotation;
         }
-        
         if (player.transform.position.Equals(targetWayPoint) && !this.end.Equals(player.transform.position)) {
             currentWayPoint++;
             targetWayPoint = get_position(path[currentWayPoint].position);
