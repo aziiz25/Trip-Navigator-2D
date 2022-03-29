@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using System.IO;
+using UnityEngine.UI;
 using System;
 using UnityEngine;
 
@@ -18,14 +18,11 @@ public class TestScript : MonoBehaviour {
     void Update() {
         if (Input.GetMouseButtonDown(0)) {
             Vector3 mousePosition = GetMousePositionWorld();
-            Debug.Log(mousePosition.y);
-
             if (mousePosition.y < -18) {
-                Debug.Log(mousePosition.y);
                 return;
             }
-
             grid.SetValue(mousePosition, 1);
+            GameObject.Find("Confirm").GetComponentInChildren<Button>().interactable = true;
         }
     }
 
@@ -36,6 +33,11 @@ public class TestScript : MonoBehaviour {
     }
 
     public void confirmStart() {
+        GameObject.Find("Confirm").GetComponentInChildren<Text>().text = "Confirm End";
+        GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.RemoveListener(confirmStart);
+        GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.AddListener(confirmEnd);
+        GameObject.Find("Confirm").GetComponentInChildren<Button>().interactable = false;
+
         grid.confirmStart();
     }
 
