@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using System.IO;
+using UnityEngine.UI;
 using System;
 using UnityEngine;
 
@@ -17,7 +17,12 @@ public class TestScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            grid.SetValue(GetMousePositionWorld(), 1);
+            Vector3 mousePosition = GetMousePositionWorld();
+            if (mousePosition.y < -18) {
+                return;
+            }
+            grid.SetValue(mousePosition, 1);
+            GameObject.Find("Confirm").GetComponentInChildren<Button>().interactable = true;
         }
     }
 
@@ -25,6 +30,19 @@ public class TestScript : MonoBehaviour {
         Vector3 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         vec.z = 0f;
         return vec;
+    }
+
+    public void confirmStart() {
+        GameObject.Find("Confirm").GetComponentInChildren<Text>().text = "Confirm End";
+        GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.RemoveListener(confirmStart);
+        GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.AddListener(confirmEnd);
+        GameObject.Find("Confirm").GetComponentInChildren<Button>().interactable = false;
+
+        grid.confirmStart();
+    }
+
+    public void confirmEnd() {
+        grid.confirmEnd();
     }
 
     public string[][] readMapData(string filePath) {

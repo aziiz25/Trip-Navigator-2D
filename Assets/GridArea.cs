@@ -28,13 +28,13 @@ public class GridArea {
         this.debugArray = new TextMesh[width, height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                debugArray[i, j] = createWorldText(null, /*GridValues[i][j]*/ "", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
-                Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
-                Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
+                // debugArray[i, j] = createWorldText(null, /*GridValues[i][j]*/ "", GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, 20, "white", TextAnchor.MiddleCenter);
+                // Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
+                // Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
         }
-        Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
-        Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+        // Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
+        // Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
     }
 
     public TextMesh createWorldText(Transform parent = null, string text = "", Vector3 localPosition = default(Vector3), int fontSize = 40, string color = "white", TextAnchor anchor = TextAnchor.UpperLeft, TextAlignment alignment = TextAlignment.Left, int sortingOrder = 5000) {
@@ -69,16 +69,22 @@ public class GridArea {
             if (!gridArray[x][y].Equals("0")) {
                 if (!isFirstSelected) {
                     ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
-                    isFirstSelected = true;
                     start = new Vector3(x, y, 0);
                 } else {
                     ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
-                    isFirstSelected = false;
                     end = new Vector3(x, y, 0);
-                    this.path = create_path();
                 }
             }
         }
+    }
+
+    public void confirmStart() {
+        isFirstSelected = true;
+    }
+
+    public void confirmEnd() {
+        isFirstSelected = false;
+        this.path = create_path();
     }
     public void SetValue(Vector3 worldPosition, int value) {
         int x, y;
