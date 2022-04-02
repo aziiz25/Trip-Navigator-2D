@@ -1100,6 +1100,7 @@ GameObject:
   - component: {fileID: 2011754247}
   - component: {fileID: 2011754249}
   - component: {fileID: 2011754250}
+  - component: {fileID: 2011754251}
   m_Layer: 0
   m_Name: GridTest
   m_TagString: Grid
@@ -1145,6 +1146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfa3a1e3dac3ea46997e422f1220a82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  script: {fileID: 0}
   draw_road: []
 --- !u!114 &2011754250
 MonoBehaviour:
@@ -1162,3 +1164,16 @@ MonoBehaviour:
   targetWayPoint: {x: 0, y: 0, z: 0}
   speed: 1
   player: {fileID: 0}
+--- !u!114 &2011754251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011754246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5304032f6a3f75042b16ba781b9b311e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  script: {fileID: 0}

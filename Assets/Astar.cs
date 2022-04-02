@@ -39,7 +39,7 @@ public class Astar {
         }
         while (open_queue.Count > 0 && closed[closed.Count - 1].Key != end) {
             int size = open_queue.Count;
-            update_adj_nodes(prev_cost);
+            update_adj_nodes();
             open_queue = open_queue.OrderBy(o => o.Value.Value).ToList();
             add_to_close();
         }
@@ -47,7 +47,7 @@ public class Astar {
 
     }
 
-    public void update_adj_nodes(double prev_cost) {
+    public void update_adj_nodes() {
         foreach (KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> node in open_queue.ToList()) {
             if (!node.Key.isVisited) {
                 if (node.Key == closed[closed.Count - 1].Key.up) {
@@ -118,8 +118,9 @@ public class Astar {
     }
 
     private void cleanPath() {
-        if (path.Count < 3) return;
-
+        if (path.Count < 3) {
+            return;
+        }
         for (int i = 1; i < path.Count - 1; i++) {
             MapNode prev = path[i - 1];
             MapNode curr = path[i];
@@ -129,8 +130,10 @@ public class Astar {
                 path.RemoveAt(i);
                 i--;
             }
-
         }
     }
 
+    public List<MapNode> get_path() {
+        return path;
+    }
 }

@@ -10,6 +10,9 @@ public class Map {
     float speedFactor = 3f;
 
 
+    public List<MapNode> path;
+
+
     public Map(string[][] gridValues, Vector3 start, Vector3 end) {
         nodes = new List<MapNode>();
         for (int x = 0; x < gridValues.Length; x++) {
@@ -74,6 +77,7 @@ public class Map {
                 }
             }
         }
+
     }
 
     private MapNode getLeft(int x, int y) {
@@ -122,4 +126,8 @@ public class Map {
             node.isVisited = false;
         }
     }
+
+
+
+
 }
