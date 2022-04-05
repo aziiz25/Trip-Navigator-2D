@@ -40,6 +40,7 @@ public class Astar {
             }
         }
         while (open_queue.Count > 0 && closed[closed.Count - 1].Key != end) {
+            int size = open_queue.Count;
             update_adj_nodes();
             open_queue = open_queue.OrderBy(o => o.Value.Value).ToList();
             add_to_close();
@@ -50,32 +51,27 @@ public class Astar {
 
     public void update_adj_nodes() {
         foreach (KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> node in open_queue.ToList()) {
-            MapNode adj_node = closed[closed.Count - 1].Key;
             if (!node.Key.isVisited) {
                 if (node.Key == closed[closed.Count - 1].Key.up) {
-                    double cost = huristic(adj_node , prev_cost + adj_node.upCost);
                     if (prev_cost + closed[closed.Count - 1].Key.upCost < node.Value.Value) {
                         create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.upCost);
                         open_queue.Remove(node);
                     }
                 }
                 if (node.Key == closed[closed.Count - 1].Key.down) {
-                    double cost = huristic(adj_node , prev_cost + adj_node.downCost);
-                    if (cost < node.Value.Value) {
+                    if (prev_cost + closed[closed.Count - 1].Key.downCost < node.Value.Value) {
                         create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.downCost);
                         open_queue.Remove(node);
                     }
                 }
                 if (node.Key == closed[closed.Count - 1].Key.right) {
-                    double cost = huristic(adj_node , prev_cost + adj_node.rightCost);
-                    if (cost < node.Value.Value) {
+                    if (prev_cost + closed[closed.Count - 1].Key.rightCost < node.Value.Value) {
                         create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.rightCost);
                         open_queue.Remove(node);
                     }
                 }
                 if (node.Key == closed[closed.Count - 1].Key.left) {
-                    double cost = huristic(adj_node , prev_cost + adj_node.leftCost);
-                    if (cost < node.Value.Value) {
+                    if (prev_cost + closed[closed.Count - 1].Key.leftCost < node.Value.Value) {
                         create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.leftCost);
                         open_queue.Remove(node);
                     }
@@ -85,18 +81,17 @@ public class Astar {
         closed[closed.Count - 1].Key.isVisited = true;
     }
 
-    public bool add_to_close() {
+    public void add_to_close() {
         foreach (KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> node in open_queue.ToList()) {
             foreach (KeyValuePair<MapNode, MapNode> closed_node in closed.ToList()) {
                 if (closed_node.Key == node.Value.Key) {
                     closed.Add(new KeyValuePair<MapNode, MapNode>(node.Key, closed_node.Key));
                     prev_cost = node.Value.Value;
                     open_queue.Remove(node);
-                    return true;
+                    return;
                 }
             }
         }
-        return false;
     }
 
     public void get_optimal_path() {
@@ -119,11 +114,9 @@ public class Astar {
         KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> q = new KeyValuePair<MapNode, KeyValuePair<MapNode, Double>>(node, node_cost);
         open_queue.Add(q);
     }
-    public double huristic(MapNode node, double cost) {
-        double dx = Math.Pow(node.position.x - end.position.x, 2);
-        double dy = Math.Pow(node.position.y - end.position.y,2);
-        // 4 for the fastest road 
-        return cost + (Math.Sqrt(dx+dy))/4;
+    public double total_cost(MapNode node, double cost) {
+        // for now its just g(n)
+        return 0;
     }
 
     private void cleanPath() {
