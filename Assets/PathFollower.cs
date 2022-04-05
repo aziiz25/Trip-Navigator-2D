@@ -37,6 +37,9 @@ public class PathFollower : MonoBehaviour {
             // i want the car to appear after the path is found
             if (grid.path != null) {
                 path = grid.path;
+                if(path.Count == 0){
+                    return;
+                }
                 //defult is not null for vector its 0 0 0 :))))
                 if (is_start_end_defult(start, end)) {
                     start = get_position(grid.start);

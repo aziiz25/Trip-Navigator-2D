@@ -26,7 +26,9 @@ public class Astar {
     }
 
     public void find() {
-
+        if(check_neighbours()){
+            return;
+        }
         foreach (MapNode node in map.nodes) {
             create_pair(node);
         }
@@ -142,5 +144,12 @@ public class Astar {
 
     public List<MapNode> get_path() {
         return path;
+    }
+
+    public bool check_neighbours(){
+        if(start.up == null && start.down == null && start.right == null && start.left == null){
+            return true;
+            }
+            return false;
     }
 }
