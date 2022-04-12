@@ -37,13 +37,12 @@ public class DrawPath : Line {
     void draw() {
         if (path_finding != null) {
             for (int i = 0; i < path_finding.Count - 1; i++) {
-                Vector3 start = path_finding[i].position;;
+                Vector3 start = path_finding[i].position; ;
                 Vector3 end = path_finding[i + 1].position;
                 GameObject line = base.DrawLine(start, end, Color.green);
                 draw_road.Add(line);
             }
         }
     }
-
 }
 

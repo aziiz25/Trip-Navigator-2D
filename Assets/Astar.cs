@@ -1,18 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
 using System.Linq;
-public class Astar {
+using UnityEngine;
 
+public class Astar {
     public MapNode start;
+
     public MapNode end;
 
     public Map map;
 
-    List<KeyValuePair<MapNode, KeyValuePair<MapNode, double>>> open_queue = new List<KeyValuePair<MapNode, KeyValuePair<MapNode, double>>>();
+    PriorityQueue open_queue = new PriorityQueue();
+
     List<KeyValuePair<MapNode, MapNode>> closed = new List<KeyValuePair<MapNode, MapNode>>();
+
     public List<MapNode> path;
+
     double prev_cost = 0;
 
     public Astar(Map map) {
@@ -26,54 +30,53 @@ public class Astar {
     }
 
     public void find() {
-        if(check_neighbours()){
+        if (check_neighbours()) {
             return;
         }
         foreach (MapNode node in map.nodes) {
             create_pair(node);
         }
-        foreach (KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> node in open_queue) {
-            if (node.Key == this.start) {
-                open_queue.Remove(node);
-                closed.Add(new KeyValuePair<MapNode, MapNode>(node.Key, null));
-                break;
-            }
-        }
-        while (open_queue.Count > 0 && closed[closed.Count - 1].Key != end) {
-            int size = open_queue.Count;
+
+        Nodes temp = open_queue.Dequeue(this.start);
+        closed.Add(new KeyValuePair<MapNode, MapNode>(temp.to, temp.from));
+
+        while (open_queue.size > 0 && closed[closed.Count - 1].Key != end) {
             update_adj_nodes();
-            open_queue = open_queue.OrderBy(o => o.Value.Value).ToList();
             add_to_close();
         }
         get_optimal_path();
-
     }
 
     public void update_adj_nodes() {
-        foreach (KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> node in open_queue.ToList()) {
-            if (!node.Key.isVisited) {
-                if (node.Key == closed[closed.Count - 1].Key.up) {
-                    if (prev_cost + closed[closed.Count - 1].Key.upCost < node.Value.Value) {
-                        create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.upCost);
-                        open_queue.Remove(node);
+        foreach (Nodes node in open_queue.get_Queue()) {
+            if (!node.to.isVisited) {
+                MapNode adj_node = closed[closed.Count - 1].Key;
+                if (node.to == adj_node.up) {
+                    if (prev_cost + adj_node.upCost < node.g_cost) {
+                        double g_cost = prev_cost + adj_node.upCost;
+                        create_pair(node.to, adj_node, g_cost, total_cost(adj_node.up, g_cost));
+                        open_queue.Dequeue(node);
                     }
                 }
-                if (node.Key == closed[closed.Count - 1].Key.down) {
-                    if (prev_cost + closed[closed.Count - 1].Key.downCost < node.Value.Value) {
-                        create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.downCost);
-                        open_queue.Remove(node);
+                if (node.to == adj_node.down) {
+                    if (prev_cost + adj_node.downCost < node.g_cost) {
+                        double g_cost = prev_cost + adj_node.downCost;
+                        create_pair(node.to, adj_node, g_cost, total_cost(adj_node.down, g_cost));
+                        open_queue.Dequeue(node);
                     }
                 }
-                if (node.Key == closed[closed.Count - 1].Key.right) {
-                    if (prev_cost + closed[closed.Count - 1].Key.rightCost < node.Value.Value) {
-                        create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.rightCost);
-                        open_queue.Remove(node);
+                if (node.to == adj_node.right) {
+                    if (prev_cost + adj_node.rightCost < node.g_cost) {
+                        double g_cost = prev_cost + adj_node.rightCost;
+                        create_pair(node.to, adj_node, g_cost, total_cost(adj_node.right, g_cost));
+                        open_queue.Dequeue(node);
                     }
                 }
-                if (node.Key == closed[closed.Count - 1].Key.left) {
-                    if (prev_cost + closed[closed.Count - 1].Key.leftCost < node.Value.Value) {
-                        create_pair(node.Key, closed[closed.Count - 1].Key, prev_cost + closed[closed.Count - 1].Key.leftCost);
-                        open_queue.Remove(node);
+                if (node.to == adj_node.left) {
+                    if (prev_cost + adj_node.leftCost < node.g_cost) {
+                        double g_cost = prev_cost + adj_node.leftCost;
+                        create_pair(node.to, adj_node, g_cost, total_cost(adj_node.left, g_cost));
+                        open_queue.Dequeue(node);
                     }
                 }
             }
@@ -82,12 +85,12 @@ public class Astar {
     }
 
     public void add_to_close() {
-        foreach (KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> node in open_queue.ToList()) {
+        foreach (Nodes node in open_queue.get_Queue()) {
             foreach (KeyValuePair<MapNode, MapNode> closed_node in closed.ToList()) {
-                if (closed_node.Key == node.Value.Key) {
-                    closed.Add(new KeyValuePair<MapNode, MapNode>(node.Key, closed_node.Key));
-                    prev_cost = node.Value.Value;
-                    open_queue.Remove(node);
+                if (closed_node.Key == node.from) {
+                    closed.Add(new KeyValuePair<MapNode, MapNode>(node.to, closed_node.Key));
+                    prev_cost = node.g_cost;
+                    open_queue.Dequeue(node);
                     return;
                 }
             }
@@ -109,14 +112,16 @@ public class Astar {
         }
         path.Add(prev);
     }
-    public void create_pair(MapNode node, MapNode from = null, double cost = 1000000) {
-        KeyValuePair<MapNode, double> node_cost = new KeyValuePair<MapNode, double>(from, cost);
-        KeyValuePair<MapNode, KeyValuePair<MapNode, Double>> q = new KeyValuePair<MapNode, KeyValuePair<MapNode, Double>>(node, node_cost);
-        open_queue.Add(q);
+
+    public void create_pair(MapNode node, MapNode from = null, double g_cost = 1000000, double f_cost = 1000000) {
+        open_queue.Enqueue(node, from, g_cost, f_cost);
     }
+
     public double total_cost(MapNode node, double cost) {
-        // for now its just g(n)
-        return 0;
+        double dx = Math.Abs(node.position.x - end.position.x);
+        double dy = Math.Abs(node.position.y - end.position.y);
+        // 4 is the max speed
+        return cost + (dx + dy) / (map.speedFactor * 4);
     }
 
     private void cleanPath() {
@@ -127,8 +132,10 @@ public class Astar {
             MapNode prev = path[i - 1];
             MapNode curr = path[i];
             MapNode next = path[i + 1];
-            if (prev.position.x == next.position.x ||
-                prev.position.y == next.position.y) {
+            if (
+                prev.position.x == next.position.x ||
+                prev.position.y == next.position.y
+            ) {
                 path.RemoveAt(i);
                 i--;
             }
@@ -139,10 +146,10 @@ public class Astar {
         return path;
     }
 
-    public bool check_neighbours(){
-        if(start.up == null && start.down == null && start.right == null && start.left == null){
+    public bool check_neighbours() {
+        if (start.up == null && start.down == null && start.right == null && start.left == null) {
             return true;
-            }
-            return false;
+        }
+        return false;
     }
 }

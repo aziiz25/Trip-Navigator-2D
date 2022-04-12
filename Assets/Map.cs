@@ -7,7 +7,7 @@ public class Map {
     public MapNode end { get; set; }
     public List<MapNode> nodes { get; set; }
 
-    float speedFactor = 3f;
+    public float speedFactor = 3f;
 
 
     public List<MapNode> path;

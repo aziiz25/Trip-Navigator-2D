@@ -35,7 +35,7 @@ public class DrawTraffic : Line {
         }
     }
 
-    public IEnumerator traffic_delay(){
+    public IEnumerator traffic_delay() {
         yield return new WaitForSeconds(5);
         add_traffic();
     }
@@ -43,11 +43,13 @@ public class DrawTraffic : Line {
     public void add_traffic() {
         if (traffic == null) {
             int index = random.Next(0, nodes.Count);
-            int direction = random.Next(0, 4); // 0 == top 1 == bottom 2 == right 3 == left
+            int direction = random.Next(0, 4); // 0 == top, 1 == bottom, 2 == right, 3 == left
             if (direction == 0) {
                 nodes[index].upCost += nodes[index].upCost * multiplier;
                 MapNode up = nodes[index].up;
-                traffic = DrawLine(nodes[index].position, up.position, Color.red);
+                if (up != null) {
+                    traffic = DrawLine(nodes[index].position, up.position, Color.red);
+                }
             } else if (direction == 1) {
                 nodes[index].downCost += nodes[index].downCost * multiplier;
                 MapNode down = nodes[index].down;
@@ -68,7 +70,7 @@ public class DrawTraffic : Line {
                 }
             }
             if (traffic == null) {
-                grid.create_path();
+                //grid.create_path();
             }
         }
     }
