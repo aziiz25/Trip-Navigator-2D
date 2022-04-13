@@ -70,9 +70,6 @@ public class DrawTraffic : Line {
                 }
             }
         }
-        if (traffic != null) {
-            traffic.layer = 1;
-        }
     }
 }
 
