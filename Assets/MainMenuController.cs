@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenuController : MonoBehaviour
-{
-    public void runProgram(){
+public class MainMenuController : MonoBehaviour {
+
+    public void runProgram() {
         SceneManager.LoadScene("SampleScene");
     }
 }
