@@ -21,7 +21,7 @@ public class DrawPath : Line {
             // i want the square to appear after the path is found
             if (grid.path != null) {
                 path_finding = grid.path;
-                if (!grid.isFirstSelected) {
+                if (!grid.isFirstSelected ) {
                     draw();
                 } else {
                     foreach (GameObject draw in draw_road) {

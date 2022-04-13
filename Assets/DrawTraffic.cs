@@ -28,15 +28,15 @@ public class DrawTraffic : Line {
         base.Update();
         if (grid != null) {
             // i want the square to appear after the path is found
-            if (grid.map != null) {
-                nodes = grid.map.nodes;
+            if (grid.path != null) {
+                nodes = grid.path;
                 StartCoroutine(traffic_delay());
             }
         }
     }
 
     public IEnumerator traffic_delay() {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(2);
         add_traffic();
     }
 
@@ -45,33 +45,34 @@ public class DrawTraffic : Line {
             int index = random.Next(0, nodes.Count);
             int direction = random.Next(0, 4); // 0 == top, 1 == bottom, 2 == right, 3 == left
             if (direction == 0) {
-                nodes[index].upCost += nodes[index].upCost * multiplier;
                 MapNode up = nodes[index].up;
                 if (up != null) {
-                    traffic = DrawLine(nodes[index].position, up.position, Color.red);
+                    nodes[index].upCost += nodes[index].upCost * multiplier;
+                    traffic = DrawLine(nodes[index].position, up.position, Color.red,1);
                 }
             } else if (direction == 1) {
-                nodes[index].downCost += nodes[index].downCost * multiplier;
                 MapNode down = nodes[index].down;
                 if (down != null) {
-                    traffic = DrawLine(nodes[index].position, down.position, Color.red);
+                    nodes[index].downCost += nodes[index].downCost * multiplier;
+                    traffic = DrawLine(nodes[index].position, down.position, Color.red,1);
                 }
             } else if (direction == 2) {
-                nodes[index].rightCost += nodes[index].rightCost * multiplier;
                 MapNode right = nodes[index].right;
                 if (right != null) {
-                    traffic = DrawLine(nodes[index].position, right.position, Color.red);
+                    nodes[index].rightCost += nodes[index].rightCost * multiplier;
+                    traffic = DrawLine(nodes[index].position, right.position, Color.red, 1);
                 }
             } else {
-                nodes[index].leftCost += nodes[index].leftCost * multiplier;
                 MapNode left = nodes[index].left;
                 if (left != null) {
-                    traffic = DrawLine(nodes[index].position, left.position, Color.red);
+                    nodes[index].leftCost += nodes[index].leftCost * multiplier;
+                    traffic = DrawLine(nodes[index].position, left.position, Color.red,1);
                 }
             }
-            if (traffic == null) {
-                //grid.create_path();
-            }
+        }
+        if (traffic != null) {
+            traffic.layer = 1;
         }
     }
 }
+
