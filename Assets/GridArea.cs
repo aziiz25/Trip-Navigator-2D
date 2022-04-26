@@ -11,6 +11,7 @@ public class GridArea {
     public float cellSize;
     private Vector3 originPosition;
     public bool isFirstSelected;
+   
 
 
     public Vector3 start;
