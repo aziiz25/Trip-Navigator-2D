@@ -13,6 +13,9 @@ public class PathFollower : MonoBehaviour {
     private float minSpeed = 2f;
     private float Acceleration = 2f;
     private float Decelaration = 4f;
+    private float totalDistance;
+    private float avgSpeed;
+    private float timer;
 
     TestScript script;
 
@@ -21,11 +24,14 @@ public class PathFollower : MonoBehaviour {
 
     Vector3 start, end;
 
+    public static bool arrive = false;
 
     // Use this for initialization
     void Start() {
         script = GameObject.FindWithTag(("Grid")).GetComponent<TestScript>();
         player = GameObject.FindWithTag(("Player"));
+        arrive = false;
+        timer = 0;
     }
 
     // Update is called once per frame
@@ -97,13 +103,13 @@ public class PathFollower : MonoBehaviour {
         Drive();
         Accelerate();
         Decelarate();
+        CalculateTimePassed();
     }
 
     void Drive() {
         // move towards the next waypoint
         player.transform.position = Vector3.MoveTowards(player.transform.position, targetWayPoint, speed * Time.deltaTime);
 
-        // rotate towards the next waypoint !!! not working me dont know how  Heeeeeeeeeeelp!!!!! :(
 
         Vector3 relativePos = targetWayPoint - player.transform.position;
         if (!relativePos.Equals(new Vector3())) {
@@ -114,6 +120,9 @@ public class PathFollower : MonoBehaviour {
         if (player.transform.position.Equals(targetWayPoint) && !this.end.Equals(player.transform.position)) {
             currentWayPoint++;
             targetWayPoint = get_position(path[currentWayPoint].position);
+        }
+        if (this.end.Equals(player.transform.position)){
+            arrive = true;
         }
     }
 
@@ -132,5 +141,51 @@ public class PathFollower : MonoBehaviour {
 
     float DistanceToNextWaypoint() {
         return Vector3.Distance(player.transform.position, targetWayPoint);
+    }
+
+
+    public float CalculateTotalDistance(){
+        if (path != null){
+            for (int i = 0; i < (this.path.Count - 1); i++) {
+                totalDistance += Vector3.Distance(path[i].position, path[i + 1].position);
+            }
+        }
+        return totalDistance;
+    }
+
+    public float CalculateRemainingDistance(){
+         List<Vector3> vPath = PathToVectorList();
+         float totalDistance = 0;
+ 
+         Vector3 current = transform.position;
+ 
+         for (int i = currentWayPoint; i < vPath.Count; i++){
+             totalDistance += (vPath[i] - current).magnitude;
+             current = vPath[i];
+         }
+         totalDistance += (end - current).magnitude;
+         return totalDistance;
+    }
+
+    public List<Vector3> PathToVectorList(){
+        List<Vector3> vPath = new List<Vector3>();
+        for (int i = 0; i < (this.path.Count); i++) {
+                vPath.Add(path[i].position);
+            }
+        return vPath;
+    }
+    public float CalculateAVGSpeed(){
+        for (int i = 0; i < (this.path.Count); i++) {
+                avgSpeed += getSpeed(i);
+        }
+        return avgSpeed;
+    }
+
+    public float CalculateExpectedArriveTime(){
+        return CalculateTotalDistance() / CalculateAVGSpeed();
+    }
+
+    public void CalculateTimePassed(){
+        timer += Time.deltaTime;
     }
 }
