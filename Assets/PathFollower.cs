@@ -13,9 +13,7 @@ public class PathFollower : MonoBehaviour {
     private float minSpeed = 2f;
     private float Acceleration = 2f;
     private float Decelaration = 4f;
-    private float totalDistance;
-    private float avgSpeed;
-    private float timer;
+    public float timer;
 
     TestScript script;
 
@@ -25,6 +23,7 @@ public class PathFollower : MonoBehaviour {
     Vector3 start, end;
 
     public static bool arrive = false;
+
 
     // Use this for initialization
     void Start() {
@@ -36,6 +35,7 @@ public class PathFollower : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+
         if (grid == null) {
             grid = script.grid;
         }
@@ -43,7 +43,7 @@ public class PathFollower : MonoBehaviour {
             // i want the car to appear after the path is found
             if (grid.path != null) {
                 path = grid.path;
-                if(path.Count == 0){
+                if (path.Count == 0) {
                     return;
                 }
                 //defult is not null for vector its 0 0 0 :))))
@@ -121,7 +121,7 @@ public class PathFollower : MonoBehaviour {
             currentWayPoint++;
             targetWayPoint = get_position(path[currentWayPoint].position);
         }
-        if (this.end.Equals(player.transform.position)){
+        if (this.end.Equals(player.transform.position)) {
             arrive = true;
         }
     }
@@ -144,8 +144,9 @@ public class PathFollower : MonoBehaviour {
     }
 
 
-    public float CalculateTotalDistance(){
-        if (path != null){
+    public float CalculateTotalDistance() {
+        float totalDistance = 0;
+        if (path != null) {
             for (int i = 0; i < (this.path.Count - 1); i++) {
                 totalDistance += Vector3.Distance(path[i].position, path[i + 1].position);
             }
@@ -153,39 +154,34 @@ public class PathFollower : MonoBehaviour {
         return totalDistance;
     }
 
-    public float CalculateRemainingDistance(){
-         List<Vector3> vPath = PathToVectorList();
-         float totalDistance = 0;
- 
-         Vector3 current = transform.position;
- 
-         for (int i = currentWayPoint; i < vPath.Count; i++){
-             totalDistance += (vPath[i] - current).magnitude;
-             current = vPath[i];
-         }
-         totalDistance += (end - current).magnitude;
-         return totalDistance;
+    public float CalculateRemainingDistance() {
+        Vector3 current = player.transform.position;
+
+        return (end - current).magnitude;
     }
 
-    public List<Vector3> PathToVectorList(){
+    public List<Vector3> PathToVectorList() {
         List<Vector3> vPath = new List<Vector3>();
         for (int i = 0; i < (this.path.Count); i++) {
-                vPath.Add(path[i].position);
-            }
+            vPath.Add(path[i].position);
+        }
         return vPath;
     }
-    public float CalculateAVGSpeed(){
-        for (int i = 0; i < (this.path.Count); i++) {
-                avgSpeed += getSpeed(i);
+    public float CalculateAVGSpeed() {
+        float speed = 0;
+        for (int i = 1; i < (this.path.Count); i++) {
+            speed += getSpeed(i);
         }
-        return avgSpeed;
+        return speed / path.Count;
     }
 
-    public float CalculateExpectedArriveTime(){
-        return CalculateTotalDistance() / CalculateAVGSpeed();
+    public float CalculateExpectedArriveTime() {
+        return (CalculateRemainingDistance() / CalculateAVGSpeed());
     }
 
-    public void CalculateTimePassed(){
-        timer += Time.deltaTime;
+    public void CalculateTimePassed() {
+        if (!arrive) {
+            timer += Time.deltaTime;
+        }
     }
 }

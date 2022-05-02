@@ -11,14 +11,14 @@ public class GridArea {
     public float cellSize;
     private Vector3 originPosition;
     public bool isFirstSelected;
-   
 
 
     public Vector3 start;
     public Vector3 end;
 
     public List<MapNode> path;
-    
+
+    List<DrawPath> path_drown;
 
     public Map map;
 
@@ -28,6 +28,7 @@ public class GridArea {
         this.cellSize = cellSize;
         this.originPosition = new Vector3(-(width * cellSize / 2), -(height * cellSize / 2) + 6, 0);
         this.gridArray = GridValues;
+        this.path_drown = new List<DrawPath>();
 
     }
 
@@ -35,6 +36,9 @@ public class GridArea {
 
     public Vector3 GetWorldPosition(float x, float y) {
         return new Vector3(x, y) * cellSize + originPosition;
+    }
+    public Vector3 GetWorldPosition(Vector3 position) {
+        return position * cellSize + originPosition;
     }
 
     private void GetXY(Vector3 worldPosition, out int x, out int y) {
@@ -63,11 +67,46 @@ public class GridArea {
         isFirstSelected = true;
     }
 
-    public void confirmEnd() {
+    public List<List<MapNode>> confirmEnd() {
         isFirstSelected = false;
         this.map = new Map(gridArray, start, end);
-        this.path = create_path();
+        List<List<MapNode>> paths = create_path();
+        return paths;
     }
+
+
+
+    public void draw_paths(List<List<MapNode>> paths) {
+        if (path == null) {
+            Color[] color = { Color.green, Color.blue, Color.red };
+            for (int i = 0; i < paths.Count; i++) {
+                path_drown.Add(new DrawPath(paths[i], color[i], this));
+            }
+        }
+    }
+
+    public void draw_path() {
+        path_drown.ForEach(path => path.destroy_road());
+        path_drown.Add(new DrawPath(path, Color.green, this));
+    }
+
+    public void choose_path(Vector3 worldPosition, List<List<MapNode>> paths) {
+        int x, y;
+        GetXY(worldPosition, out x, out y);
+        foreach (List<MapNode> path in paths) {
+            for (int i = 0; i < path.Count - 1; i++) {
+                double dy = path[i].position.y - path[i + 1].position.y;
+                double dy_user = path[i].position.y - y;
+                if (dy == 0 && dy_user == 0 && path[i].position.x >= x && x <= path[i + 1].position.x) {
+                    this.path = path;
+                    return;
+                }
+            }
+        }
+    }
+
+
+
     public void SetValue(Vector3 worldPosition, int value) {
         int x, y;
         GetXY(worldPosition, out x, out y);
@@ -106,7 +145,9 @@ public class GridArea {
         }
     }
 
-    public List<MapNode> create_path() {
-        return new Astar(map).get_path();
+
+
+    public List<List<MapNode>> create_path() {
+        return new Astar(map).get_paths();
     }
 }

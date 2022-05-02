@@ -3,46 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class DrawPath : Line {
+public class DrawPath {
 
 
     public List<GameObject> draw_road;
 
-    List<MapNode> path_finding;
-    // Start is called before the first frame update
-    new void Start() {
-        base.Start();
+    public Line line;
+
+    public List<MapNode> path;
+
+    Color color;
+
+
+    public DrawPath(List<MapNode> path, Color color, GridArea grid) {
         draw_road = new List<GameObject>();
+        this.path = path;
+        this.color = color;
+        line = new Line(grid);
+        draw();
     }
 
-    new void Update() {
-        base.Update();
-        if (grid != null) {
-            // i want the square to appear after the path is found
-            if (grid.path != null) {
-                path_finding = grid.path;
-                if (!grid.isFirstSelected ) {
-                    draw();
-                } else {
-                    foreach (GameObject draw in draw_road) {
-                        Destroy(draw);
-                    }
-                    draw_road.Clear();
-                }
-            }
-        }
-    }
 
 
     void draw() {
-        if (path_finding != null) {
-            for (int i = 0; i < path_finding.Count - 1; i++) {
-                Vector3 start = path_finding[i].position; ;
-                Vector3 end = path_finding[i + 1].position;
-                GameObject line = base.DrawLine(start, end, Color.green);
-                draw_road.Add(line);
-            }
+        for (int i = 0; i < path.Count - 1; i++) {
+            Vector3 start = path[i].position; ;
+            Vector3 end = path[i + 1].position;
+            GameObject line = this.line.DrawLine(start, end, color);
+            draw_road.Add(line);
         }
     }
+
+    public void destroy_road() {
+        foreach (GameObject road in draw_road) {
+            GameObject.Destroy(road);
+        }
+        draw_road.Clear();
+    }
+
 }
 

@@ -12,9 +12,11 @@ public class Map {
 
     public List<MapNode> path;
 
+    public String[][] gridValues;
 
     public Map(string[][] gridValues, Vector3 start, Vector3 end) {
         nodes = new List<MapNode>();
+        this.gridValues = gridValues;
         for (int x = 0; x < gridValues.Length; x++) {
             for (int y = 0; y < gridValues[x].Length; y++) {
                 if (gridValues[x][y].Equals("1") || x == start.x && y == start.y || x == end.x && y == end.y) {

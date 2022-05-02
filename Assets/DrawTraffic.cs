@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-public class DrawTraffic : Line {
+public class DrawTraffic : MonoBehaviour {
     // Start is called before the first frame update
 
 
@@ -16,16 +16,29 @@ public class DrawTraffic : Line {
     float multiplier = 0.25f;
 
 
-    new void Start() {
-        base.Start();
+   public Line line;
+
+
+    public GridArea grid;
+
+    public TestScript script;
+
+
+    void Start() {
+        if (GameObject.FindWithTag(("Grid")) != null) {
+            script = GameObject.FindWithTag(("Grid")).GetComponent<TestScript>();
+        }
         random = new System.Random();
     }
 
     // Update is called once per frame
 
     // new is like the annotation @override :)
-    new void Update() {
-        base.Update();
+    void Update() {
+        if (this.grid == null) {
+            this.grid = script.grid;
+            line = new Line(grid);
+        }
         if (grid != null) {
             // i want the square to appear after the path is found
             if (grid.path != null) {
@@ -48,25 +61,25 @@ public class DrawTraffic : Line {
                 MapNode up = nodes[index].up;
                 if (up != null) {
                     nodes[index].upCost += nodes[index].upCost * multiplier;
-                    traffic = DrawLine(nodes[index].position, up.position, Color.red,1);
+                    traffic = line.DrawLine(nodes[index].position, up.position, Color.red,1);
                 }
             } else if (direction == 1) {
                 MapNode down = nodes[index].down;
                 if (down != null) {
                     nodes[index].downCost += nodes[index].downCost * multiplier;
-                    traffic = DrawLine(nodes[index].position, down.position, Color.red,1);
+                    traffic = line.DrawLine(nodes[index].position, down.position, Color.red,1);
                 }
             } else if (direction == 2) {
                 MapNode right = nodes[index].right;
                 if (right != null) {
                     nodes[index].rightCost += nodes[index].rightCost * multiplier;
-                    traffic = DrawLine(nodes[index].position, right.position, Color.red, 1);
+                    traffic = line.DrawLine(nodes[index].position, right.position, Color.red, 1);
                 }
             } else {
                 MapNode left = nodes[index].left;
                 if (left != null) {
                     nodes[index].leftCost += nodes[index].leftCost * multiplier;
-                    traffic = DrawLine(nodes[index].position, left.position, Color.red,1);
+                    traffic = line.DrawLine(nodes[index].position, left.position, Color.red,1);
                 }
             }
         }

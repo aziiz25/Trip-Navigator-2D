@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine.UI;
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class TestScript : MonoBehaviour {
@@ -14,7 +15,10 @@ public class TestScript : MonoBehaviour {
     public GameObject summary;
     public GameObject changeStart;
     public GameObject changeEnd;
-    
+
+    bool select_point;
+
+    List<List<MapNode>> paths;
     private void Awake() {
         start = GameObject.Find("Start");
         run = GameObject.Find("Run");
@@ -23,13 +27,14 @@ public class TestScript : MonoBehaviour {
         changeEnd = GameObject.Find("Change End");
     }
 
-    
+
     void Start() {
         start.SetActive(true);
         run.SetActive(false);
         summary.SetActive(false);
         changeStart.SetActive(false);
         changeEnd.SetActive(false);
+        car = GameObject.FindWithTag(("Grid")).GetComponent<PathFollower>();
         string currentPath = Directory.GetCurrentDirectory();
         string pathToFile = "/Assets/Maps/map_" + (GameManager.instance.CharIndex + 1) + ".csv";
         string[][] mapValues = readMapData(currentPath + pathToFile);
@@ -43,14 +48,30 @@ public class TestScript : MonoBehaviour {
             if (mousePosition.y < -18) {
                 return;
             }
-            grid.SetValue(mousePosition, 1);
-            
+            if (paths == null) {
+                grid.SetValue(mousePosition, 1);
+            } else {
+                choose_path(mousePosition, paths);
+            }
         }
-
-        if(PathFollower.arrive){
+        if (grid.path == null && paths != null) {
+            grid.draw_paths(paths);
+        }
+        if (grid.path != null) {
+            grid.draw_path();
+            MoveToRun();
+        }
+        if (IsRunActive()) {
+            run_info();
+        }
+        if (PathFollower.arrive) {
             MoveToSummary();
         }
+        if(IsSummaryActive()){
+            summary_info();
+        }
     }
+
 
     public Vector3 GetMousePositionWorld() {
         Vector3 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -58,18 +79,21 @@ public class TestScript : MonoBehaviour {
         return vec;
     }
 
-    public void Confirm(){
-        if (!grid.isFirstSelected && grid.start != null){
+    public void Confirm() {
+        if (!grid.isFirstSelected && grid.start != null) {
             grid.confirmStart();
             GameObject.Find("StartText").GetComponentInChildren<Text>().text = grid.start.x + ", " + grid.start.y;
             GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
             GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
             GameObject.Find("EndText").GetComponentInChildren<Text>().color = Color.red;
-        }else{
-            grid.confirmEnd();
+        } else {
+            paths = grid.confirmEnd();
             GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.end.x + ", " + grid.end.y;
-            MoveToRun();
         }
+    }
+
+    public void choose_path(Vector3 mousePosition, List<List<MapNode>> paths) {
+        grid.choose_path(mousePosition, paths);
     }
     public void confirmStart() {
         GameObject.Find("Confirm").GetComponentInChildren<Text>().text = "Confirm End";
@@ -82,6 +106,32 @@ public class TestScript : MonoBehaviour {
 
     public void confirmEnd() {
         grid.confirmEnd();
+    }
+
+
+    public void run_info() {
+        if (car.path != null) {
+            double time = car.CalculateExpectedArriveTime();
+            double dis = car.CalculateRemainingDistance();
+            double speed = car.speed;
+            GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = (int)time + " min";
+            GameObject.Find("Distance").GetComponentInChildren<Text>().text = (int)dis + " km";
+            GameObject.Find("CurrentSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
+            GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 48;
+            GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().color = Color.red;
+        }
+    }
+
+
+    public void summary_info() {
+        if (car.path != null) {
+            double time = car.timer;
+            double dis = car.CalculateTotalDistance();
+            double speed = car.CalculateAVGSpeed();
+            GameObject.Find("Duration").GetComponentInChildren<Text>().text = (int)time + " min";
+            GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = (int)dis + " km";
+            GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
+        }
     }
 
     public string[][] readMapData(string filePath) {
@@ -100,34 +150,34 @@ public class TestScript : MonoBehaviour {
         return values;
     }
 
-    public void MainMenu(){
+    public void MainMenu() {
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void Quit(){
-         Application.Quit();
+    public void Quit() {
+        Application.Quit();
     }
 
-    public bool IsStartActive(){
+    public bool IsStartActive() {
         return start.activeSelf;
     }
 
-    public bool IsRunActive(){
+    public bool IsRunActive() {
         return run.activeSelf;
     }
 
-    public bool IsSummaryActive(){
+    public bool IsSummaryActive() {
         return summary.activeSelf;
     }
 
 
-    public void MoveToRun(){
+    public void MoveToRun() {
         start.SetActive(false);
         run.SetActive(true);
         summary.SetActive(false);
     }
 
-    public void MoveToSummary(){
+    public void MoveToSummary() {
         start.SetActive(false);
         run.SetActive(false);
         summary.SetActive(true);
