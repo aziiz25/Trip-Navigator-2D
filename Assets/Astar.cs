@@ -30,12 +30,15 @@ public class Astar {
         path = find(start);
         path.Reverse();
         paths = yenKSP();
-        path = cleanPath(path);
+        cleanPath();
     }
 
     public List<MapNode> find(MapNode start) {
         prev_cost = 0;
         this.map.markUnvisited();
+        // start from draw traffic has diff ref ---: :: so to get the currect ref i did this
+        start = map.nodes.Find(node => node.position == start.position);
+
         if (check_neighbours(start)) {
             return null;
         }
@@ -49,22 +52,17 @@ public class Astar {
         closed.Add(new KeyValuePair<MapNode, MapNode>(temp.to, temp.from));
         while (open_queue.size > 0 && closed[closed.Count - 1].Key.position != end.position) {
             int size = open_queue.size;
-            if (check_neighbours(closed[closed.Count - 1].Key)) {
-                return null;
-            }
             update_adj_nodes();
             add_to_close();
-            if (size == open_queue.size) {
+            if (size == open_queue.size || check_neighbours(closed[closed.Count - 1].Key)) {
                 return null;
             }
         }
-
         return get_optimal_path(start);
     }
 
     public void update_adj_nodes() {
         MapNode adj_node = closed[closed.Count - 1].Key;
-
         foreach (Nodes node in open_queue.get_Queue()) {
             if (!node.to.isVisited) {
                 if (node.to == adj_node.up) {
@@ -117,7 +115,7 @@ public class Astar {
         path.Add(closed[closed.Count - 1].Key);
         MapNode prev = closed[closed.Count - 1].Value;
         closed.Remove(closed[closed.Count - 1]);
-        while (prev != start) {
+        while (prev != null) {
             foreach (KeyValuePair<MapNode, MapNode> node in closed.ToList()) {
                 if (prev == node.Key) {
                     path.Add(node.Key);
@@ -126,10 +124,27 @@ public class Astar {
                 }
             }
         }
-        path.Add(prev);
+        //path.Add(prev);
         return path;
     }
 
+
+    public void update_node_costs(MapNode node, float cost, double location) {
+        MapNode node_to_update = map.nodes.Find(n => n.position == node.position);
+        if (location == 0) {
+            node_to_update.upCost = cost;
+            node_to_update.up.downCost = cost;
+        } else if (location == 1) {
+            node_to_update.downCost = cost;
+            node_to_update.down.upCost = cost;
+        } else if (location == 2) {
+            node_to_update.rightCost = cost;
+            node_to_update.right.leftCost = cost;
+        } else {
+            node_to_update.leftCost = cost;
+            node_to_update.left.rightCost = cost;
+        }
+    }
 
     public void create_pair(MapNode node, MapNode from = null, double g_cost = 1000000, double f_cost = 1000000) {
         open_queue.Enqueue(node, from, g_cost, f_cost);
@@ -139,7 +154,7 @@ public class Astar {
         double dx = Math.Abs(node.position.x - end.position.x);
         double dy = Math.Abs(node.position.y - end.position.y);
         // 4 is the max speed
-        return cost + (dx + dy) / (map.speedFactor * 4);
+        return cost + ((dx + dy) / (map.speedFactor * 4));
     }
 
     private List<MapNode> cleanPath(List<MapNode> path) {
@@ -156,6 +171,11 @@ public class Astar {
             }
         }
         return path;
+    }
+
+
+    private void cleanPath() {
+        paths.ForEach(path => cleanPath(path));
     }
 
     public List<MapNode> get_path() {
@@ -190,6 +210,7 @@ public class Astar {
                 remove_from_graph(root_path, spurNode);
                 List<MapNode> spur_path = find(spurNode);
                 if (spur_path == null) {
+                    this.map = new Map(map.gridValues, this.start.position, this.end.position);
                     continue;
                 }
                 spur_path.Reverse();
@@ -307,3 +328,4 @@ public class Astar {
         return null;
     }
 }
+

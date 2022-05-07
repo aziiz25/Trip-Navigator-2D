@@ -25,6 +25,9 @@ public class PathFollower : MonoBehaviour {
     public static bool arrive = false;
 
 
+    public List<MapNode> new_path;
+
+
     // Use this for initialization
     void Start() {
         script = GameObject.FindWithTag(("Grid")).GetComponent<TestScript>();
@@ -35,38 +38,51 @@ public class PathFollower : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
         if (grid == null) {
             grid = script.grid;
+            return;
         }
-        if (grid != null) {
-            // i want the car to appear after the path is found
-            if (grid.path != null) {
-                path = grid.path;
-                if (path.Count == 0) {
-                    return;
-                }
-                //defult is not null for vector its 0 0 0 :))))
-                if (is_start_end_defult(start, end)) {
-                    start = get_position(grid.start);
-                    end = get_position(grid.end);
-                    player.transform.position = start;
-                }
-                if (!grid.isFirstSelected) {
-                    targetWayPoint = get_position(this.path[currentWayPoint].position);
-                    maxSpeed = getSpeed(currentWayPoint);
-                    move();
-                } else {
-                    if (grid.isFirstSelected) {
-                        start = new Vector3();
-                        end = new Vector3();
-                        currentWayPoint = 1;
-                    }
-                }
+        if (grid.path != null && path == null) {
+            path = grid.path;
+            return;
+        }
+        if (path == null || path.Count == 0) {
+            return;
+        }
+        // i want the car to appear after the path is found
+        //defult is not null for vector its 0 0 0 :))))
+        if (is_start_end_defult(start, end)) {
+            start = get_position(grid.start);
+            end = get_position(grid.end);
+            player.transform.position = start;
+        }
+        if (!grid.isFirstSelected) {
+            targetWayPoint = get_position(this.path[currentWayPoint].position);
+            maxSpeed = getSpeed(currentWayPoint);
+            move();
+        } else {
+            if (grid.isFirstSelected) {
+                start = new Vector3();
+                end = new Vector3();
+                currentWayPoint = 1;
             }
+        }
+        if (new_path != null) {
+            DrawPath new_road = new DrawPath(new_path, Color.blue, grid);
         }
     }
 
+
+    /*
+    called when a new path is found :)
+    Hi i hate this :( 
+        i hate working :()
+    */
+    public void change_path(List<MapNode> new_path, int new_point) {
+        this.new_path = new_path;
+        this.path = new_path;
+        this.currentWayPoint = new_point;
+    }
     private float getSpeed(int targetIndex) {
         var current = this.path[targetIndex - 1];
         var next = this.path[targetIndex];
@@ -160,13 +176,6 @@ public class PathFollower : MonoBehaviour {
         return (end - current).magnitude;
     }
 
-    public List<Vector3> PathToVectorList() {
-        List<Vector3> vPath = new List<Vector3>();
-        for (int i = 0; i < (this.path.Count); i++) {
-            vPath.Add(path[i].position);
-        }
-        return vPath;
-    }
     public float CalculateAVGSpeed() {
         float speed = 0;
         for (int i = 1; i < (this.path.Count); i++) {

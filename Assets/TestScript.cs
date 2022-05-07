@@ -67,7 +67,7 @@ public class TestScript : MonoBehaviour {
         if (PathFollower.arrive) {
             MoveToSummary();
         }
-        if(IsSummaryActive()){
+        if (IsSummaryActive()) {
             summary_info();
         }
     }

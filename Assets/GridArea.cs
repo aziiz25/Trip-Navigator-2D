@@ -22,6 +22,8 @@ public class GridArea {
 
     public Map map;
 
+    public Astar a_star;
+
     public GridArea(int width, int height, float cellSize, string[][] GridValues) {
         this.width = width;
         this.height = height;
@@ -148,6 +150,7 @@ public class GridArea {
 
 
     public List<List<MapNode>> create_path() {
-        return new Astar(map).get_paths();
+        this.a_star = new Astar(map);
+        return this.a_star.get_paths();
     }
 }
