@@ -32,10 +32,19 @@ public class Astar {
             path.Reverse();
             paths = yenKSP();
             cleanPath();
+        }else{
+            throw new InvalidOperationException();
         }
     }
 
     public List<MapNode> find(MapNode start) {
+        if (start.position == end.position) {
+            List<MapNode> t = new List<MapNode>();
+            t.Add(end);
+            t.Add(start);
+            return t;
+        }
+
         prev_cost = 0;
         this.map.markUnvisited();
         // start from draw traffic has diff ref ---: :: so to get the currect ref i did this

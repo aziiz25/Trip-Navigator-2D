@@ -27,9 +27,10 @@ public class TestScript : MonoBehaviour {
 
     public GameObject choose_traffic;
 
+    public GameObject no_path;
+
     public DrawTraffic traffic;
 
-    bool keep_path;
 
     bool check_user_path_action;
 
@@ -41,6 +42,7 @@ public class TestScript : MonoBehaviour {
         summary = GameObject.Find("Summary");
         changeStart = GameObject.Find("Change Start");
         changeEnd = GameObject.Find("Change End");
+        no_path = GameObject.Find("NoPath");
     }
 
 
@@ -52,6 +54,7 @@ public class TestScript : MonoBehaviour {
         summary.SetActive(false);
         changeStart.SetActive(false);
         changeEnd.SetActive(false);
+        no_path.SetActive(false);
         path2 = GameObject.Find(("Path2"));
         car = GameObject.FindWithTag(("Grid")).GetComponent<PathFollower>();
         traffic = GameObject.FindWithTag(("Grid")).GetComponent<DrawTraffic>();
@@ -63,51 +66,49 @@ public class TestScript : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetMouseButtonDown(0) && IsStartActive()) {
-            Vector3 mousePosition = GetMousePositionWorld();
-            if (mousePosition.y < -18) {
-                return;
+        try {
+            if (Input.GetMouseButtonDown(0) && IsStartActive()) {
+                Vector3 mousePosition = GetMousePositionWorld();
+                if (mousePosition.y < -18) {
+                    return;
+                }
+                if (paths == null) {
+                    grid.SetValue(mousePosition, 1);
+                }
             }
-            if (paths == null) {
-                grid.SetValue(mousePosition, 1);
+            if (grid.path == null && paths != null) {
+                grid.draw_paths(paths);
+                MoveToChoosePath();
+                if (paths.Count < 2 && GameObject.Find("Path2") != null) {
+                    GameObject.Find("Path2").SetActive(false);
+                }
             }
-        }
-
-        if (grid.path == null && paths != null) {
-            grid.draw_paths(paths);
-            MoveToChoosePath();
-            if (paths.Count < 2 && GameObject.Find("Path2") != null) {
-                GameObject.Find("Path2").SetActive(false);
+            if (grid.path != null && !IsRunActive()) {
+                grid.draw_path();
+                paths.Clear();
+                paths.Add(grid.path);
+                MoveToRun();
             }
-        }
+            if (IsRunActive()) {
+                run_info();
+            }
+            if (traffic.isTraffic && !check_user_path_action) {
+                check_not_equal_path();
+                grid.draw_paths(paths);
+                MoveToChooseRoadWithTraffic();
+            }
+            if (choose_traffic.activeSelf) {
+                StartCoroutine(user_actions());
+            }
 
-        if (grid.path != null && !IsRunActive()) {
-            grid.draw_path();
-            paths.Clear();
-            paths.Add(grid.path);
-            MoveToRun();
-        }
-        if (IsRunActive()) {
-            run_info();
-        }
-        if (traffic.isTraffic && !check_user_path_action) {
-            check_not_equal_path();
-            grid.draw_paths(paths);
-            MoveToChooseRoadWithTraffic();
-        }
-        if (choose_traffic.activeSelf) {
-            StartCoroutine(user_actions());
-        }
-        
-        if(keep_path){
-
-        }
-
-        if (PathFollower.arrive) {
-            MoveToSummary();
-        }
-        if (IsSummaryActive()) {
-            summary_info();
+            if (PathFollower.arrive) {
+                MoveToSummary();
+            }
+            if (IsSummaryActive()) {
+                summary_info();
+            }
+        } catch (Exception e) {
+            MoveToNoPath();
         }
     }
 
@@ -135,13 +136,23 @@ public class TestScript : MonoBehaviour {
     public void Confirm() {
         if (!grid.isFirstSelected && grid.start != null) {
             grid.confirmStart();
+            if (!grid.isFirstSelected) {
+                return;
+            }
             GameObject.Find("StartText").GetComponentInChildren<Text>().text = grid.start.x + ", " + grid.start.y;
             GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
             GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
             GameObject.Find("EndText").GetComponentInChildren<Text>().color = Color.red;
         } else {
-            paths = grid.confirmEnd();
-            GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.end.x + ", " + grid.end.y;
+            try {
+                paths = grid.confirmEnd();
+                if (grid.isFirstSelected) {
+                    return;
+                }
+                GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.end.x + ", " + grid.end.y;
+            } catch (Exception e) {
+                MoveToNoPath();
+            }
         }
     }
 
@@ -162,7 +173,7 @@ public class TestScript : MonoBehaviour {
         choose_traffic.SetActive(false);
         paths.Remove(paths[1]);
         grid.draw_path();
-        keep_path = true;
+        car.path = paths[0];
     }
 
     public void confirmStart() {
@@ -171,7 +182,6 @@ public class TestScript : MonoBehaviour {
         GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.AddListener(confirmEnd);
         GameObject.Find("Confirm").GetComponentInChildren<Button>().interactable = false;
 
-        grid.confirmStart();
     }
 
     public void confirmEnd() {
@@ -222,6 +232,7 @@ public class TestScript : MonoBehaviour {
 
 
     public void check_not_equal_path() {
+        // if node note fount
         foreach (MapNode node in traffic.path) {
             int index = car.path.FindIndex(p => p.position == node.position);
             if (index == -1) {
@@ -281,5 +292,14 @@ public class TestScript : MonoBehaviour {
         select_path.SetActive(false);
         run.SetActive(false);
         summary.SetActive(true);
+    }
+
+
+    public void MoveToNoPath() {
+        start.SetActive(false);
+        select_path.SetActive(false);
+        run.SetActive(false);
+        summary.SetActive(false);
+        no_path.SetActive(true);
     }
 }

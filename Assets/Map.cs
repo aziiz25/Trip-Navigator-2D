@@ -23,10 +23,12 @@ public class Map {
                     var current = new MapNode(new Vector3(x, y, 0));
                     if (current.position.x == start.x && current.position.y == start.y) {
                         this.start = current;
+                        if(end == start){
+                            this.end = current;
+                        }
                     } else if (current.position.x == end.x && current.position.y == end.y) {
                         this.end = current;
                     }
-
                     MapNode tempLeft = null;
                     MapNode tempDown = null;
                     if (x - 1 >= 0 && !gridValues[x - 1][y].Equals("0"))

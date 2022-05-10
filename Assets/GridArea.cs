@@ -24,6 +24,10 @@ public class GridArea {
 
     public Astar a_star;
 
+    bool is_blue_dot_moved;
+
+    bool is_red_dot_moved;
+
     public GridArea(int width, int height, float cellSize, string[][] GridValues) {
         this.width = width;
         this.height = height;
@@ -57,19 +61,26 @@ public class GridArea {
                 if (!isFirstSelected) {
                     ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     start = new Vector3(x, y, 0);
+                    is_blue_dot_moved = true;
                 } else {
                     ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     end = new Vector3(x, y, 0);
+                    is_red_dot_moved = true;
                 }
             }
         }
     }
 
     public void confirmStart() {
-        isFirstSelected = true;
+        if (is_blue_dot_moved) {
+            isFirstSelected = true;
+        }
     }
 
     public List<List<MapNode>> confirmEnd() {
+        if (!is_red_dot_moved) {
+            return null;
+        }
         isFirstSelected = false;
         this.map = new Map(gridArray, start, end);
         List<List<MapNode>> paths = create_path();
