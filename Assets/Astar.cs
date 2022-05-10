@@ -28,9 +28,11 @@ public class Astar {
         this.end = map.end;
         this.map = map;
         path = find(start);
-        path.Reverse();
-        paths = yenKSP();
-        cleanPath();
+        if (path != null) {
+            path.Reverse();
+            paths = yenKSP();
+            cleanPath();
+        }
     }
 
     public List<MapNode> find(MapNode start) {
@@ -134,15 +136,23 @@ public class Astar {
         if (location == 0) {
             node_to_update.upCost = cost;
             node_to_update.up.downCost = cost;
+            node_to_update.upSpeed -= node_to_update.upSpeed * 0.5f;
+            node_to_update.up.downSpeed -= node_to_update.downSpeed * 0.5f;
         } else if (location == 1) {
             node_to_update.downCost = cost;
             node_to_update.down.upCost = cost;
+            node_to_update.downSpeed -= node_to_update.downSpeed * 0.5f;
+            node_to_update.down.upSpeed -= node_to_update.down.upSpeed * 0.5f;
         } else if (location == 2) {
             node_to_update.rightCost = cost;
             node_to_update.right.leftCost = cost;
+            node_to_update.rightSpeed -= node_to_update.rightSpeed * 0.5f;
+            node_to_update.right.leftSpeed -= node_to_update.right.leftSpeed * 0.5f;
         } else {
             node_to_update.leftCost = cost;
             node_to_update.left.rightCost = cost;
+            node_to_update.leftSpeed -= node_to_update.leftSpeed * 0.5f;
+            node_to_update.left.rightSpeed -= node_to_update.left.rightSpeed * 0.5f;
         }
     }
 
@@ -157,7 +167,7 @@ public class Astar {
         return cost + ((dx + dy) / (map.speedFactor * 4));
     }
 
-    private List<MapNode> cleanPath(List<MapNode> path) {
+    public List<MapNode> cleanPath(List<MapNode> path) {
         if (path.Count < 3) {
             return path;
         }

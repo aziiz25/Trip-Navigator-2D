@@ -460,3 +460,13 @@ C# parse time         : 2417ms
 candidates check time : 83ms
 console write time    : 1ms
 
+[api-updater (non-obsolete-error-filter)] 09/10/43 03:13:49  : Starting D:/FCIT/الترم التاسع/CPCS-498/unity engine/2020.3.27f1/Editor/Data/Tools/ScriptUpdater/APIUpdater.NonObsoleteApiUpdaterDetector.exe
+[api-updater (non-obsolete-error-filter)] 
+----------------------------------
+jit/startup time      : 2258.9909ms
+moved types parse time: 108ms
+candidates parse time : 1ms
+C# parse time         : 1831ms
+candidates check time : 42ms
+console write time    : 0ms
+

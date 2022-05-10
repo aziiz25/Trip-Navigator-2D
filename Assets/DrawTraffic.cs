@@ -8,7 +8,7 @@ public class DrawTraffic : MonoBehaviour {
 
 
     public System.Random random;
-    List<MapNode> nodes;
+    public List<MapNode> path;
 
 
     GameObject traffic;
@@ -24,6 +24,8 @@ public class DrawTraffic : MonoBehaviour {
     public TestScript script;
 
     PathFollower car;
+
+    public bool isTraffic;
     void Start() {
         if (GameObject.FindWithTag(("Grid")) != null) {
             script = GameObject.FindWithTag(("Grid")).GetComponent<TestScript>();
@@ -41,7 +43,7 @@ public class DrawTraffic : MonoBehaviour {
         if (grid != null) {
             // i want the square to appear after the path is found
             if (grid.path != null) {
-                nodes = grid.path;
+                path = grid.path;
                 StartCoroutine(traffic_delay());
             }
         }
@@ -53,44 +55,57 @@ public class DrawTraffic : MonoBehaviour {
     }
 
     public void add_traffic() {
-        if (traffic != null) {
+        if (traffic != null || path.Count <= 2) {
             return;
         }
-        int index = random.Next(0, nodes.Count);
+        int index = random.Next(3, path.Count);
         int direction = random.Next(0, 4); // 0 == top, 1 == bottom, 2 == right, 3 == left
         float cost = 0;
+        MapNode node_dir;
         if (direction == 0) {
-            MapNode up = nodes[index].up;
+            MapNode up = path[index].up;
             if (up != null) {
-                cost = nodes[index].upCost + nodes[index].upCost * multiplier + 500000;
-                traffic = line.DrawLine(nodes[index].position, up.position, Color.red, 1);
+                cost = path[index].upCost + path[index].upCost * multiplier + 500000;
+                traffic = line.DrawLine(path[index].position, up.position, Color.red, 1);
+                node_dir = up;
             }
         } else if (direction == 1) {
-            MapNode down = nodes[index].down;
+            MapNode down = path[index].down;
             if (down != null) {
-                cost = nodes[index].downCost + nodes[index].downCost * multiplier + 500000;
-                traffic = line.DrawLine(nodes[index].position, down.position, Color.red, 1);
+                cost = path[index].downCost + path[index].downCost * multiplier + 500000;
+                traffic = line.DrawLine(path[index].position, down.position, Color.red, 1);
+                node_dir = down;
             }
         } else if (direction == 2) {
-            MapNode right = nodes[index].right;
+            MapNode right = path[index].right;
             if (right != null) {
-                cost = nodes[index].rightCost + nodes[index].rightCost * multiplier + 500000;
-                traffic = line.DrawLine(nodes[index].position, right.position, Color.red, 1);
+                cost = path[index].rightCost + path[index].rightCost * multiplier + 500000;
+                traffic = line.DrawLine(path[index].position, right.position, Color.red, 1);
+                node_dir = right;
             }
         } else {
-            MapNode left = nodes[index].left;
+            MapNode left = path[index].left;
             if (left != null) {
-                cost = nodes[index].leftCost + nodes[index].leftCost * multiplier + 500000;
-                traffic = line.DrawLine(nodes[index].position, left.position, Color.red, 1);
+                cost = path[index].leftCost + path[index].leftCost * multiplier + 500000;
+                traffic = line.DrawLine(path[index].position, left.position, Color.red, 1);
+                node_dir = left;
             }
         }
         car = GameObject.FindWithTag(("Grid")).GetComponent<PathFollower>();
-        if (car.path.Count - car.currentWayPoint > 1 && traffic != null) {
-            grid.a_star.update_node_costs(nodes[index], cost, direction);
-            List<MapNode> path = grid.a_star.find(nodes[car.currentWayPoint - 1]);
-            nodes = path;
-            path.Reverse();
-            car.change_path(path, car.currentWayPoint);
+        if (car.path.Count > 1 && traffic != null) {
+            grid.a_star.update_node_costs(this.path[index], cost, direction);
+            List<MapNode> path = grid.a_star.find(car.path[car.currentWayPoint - 1]);
+            add_to_list(path);
+            path = grid.a_star.cleanPath(path);
+            this.path = path;
+            this.path.Reverse();
+            isTraffic = true;
+        }
+    }
+
+    public void add_to_list(List<MapNode> new_path) {
+        for (int i = car.currentWayPoint - 1; i >= 0; i--) {
+            new_path.Add(this.path[i]);
         }
     }
 }

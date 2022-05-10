@@ -24,8 +24,8 @@ public class PathFollower : MonoBehaviour {
 
     public static bool arrive = false;
 
+    
 
-    public List<MapNode> new_path;
 
 
     // Use this for initialization
@@ -67,22 +67,28 @@ public class PathFollower : MonoBehaviour {
                 currentWayPoint = 1;
             }
         }
-        if (new_path != null) {
-            DrawPath new_road = new DrawPath(new_path, Color.blue, grid);
-        }
     }
 
 
-    /*
-    called when a new path is found :)
-    Hi i hate this :( 
-        i hate working :()
-    */
+
     public void change_path(List<MapNode> new_path, int new_point) {
-        this.new_path = new_path;
+        int index = path.FindIndex(p => p.position == new_path[0].position);
         this.path = new_path;
+        this.grid.path = new_path;
         this.currentWayPoint = new_point;
+        targetWayPoint = get_position(path[this.currentWayPoint].position);
+        grid.a_star.cleanPath(path);
     }
+
+
+    public bool next_node_on_path(MapNode node) {
+        if (targetWayPoint != node.position) {
+            return false;
+        }
+        return true;
+    }
+
+
     private float getSpeed(int targetIndex) {
         var current = this.path[targetIndex - 1];
         var next = this.path[targetIndex];
@@ -125,8 +131,6 @@ public class PathFollower : MonoBehaviour {
     void Drive() {
         // move towards the next waypoint
         player.transform.position = Vector3.MoveTowards(player.transform.position, targetWayPoint, speed * Time.deltaTime);
-
-
         Vector3 relativePos = targetWayPoint - player.transform.position;
         if (!relativePos.Equals(new Vector3())) {
             float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
