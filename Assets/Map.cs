@@ -12,19 +12,23 @@ public class Map {
 
     public List<MapNode> path;
 
+    public String[][] gridValues;
 
     public Map(string[][] gridValues, Vector3 start, Vector3 end) {
         nodes = new List<MapNode>();
+        this.gridValues = gridValues;
         for (int x = 0; x < gridValues.Length; x++) {
             for (int y = 0; y < gridValues[x].Length; y++) {
                 if (gridValues[x][y].Equals("1") || x == start.x && y == start.y || x == end.x && y == end.y) {
                     var current = new MapNode(new Vector3(x, y, 0));
                     if (current.position.x == start.x && current.position.y == start.y) {
                         this.start = current;
+                        if(end == start){
+                            this.end = current;
+                        }
                     } else if (current.position.x == end.x && current.position.y == end.y) {
                         this.end = current;
                     }
-
                     MapNode tempLeft = null;
                     MapNode tempDown = null;
                     if (x - 1 >= 0 && !gridValues[x - 1][y].Equals("0"))
@@ -126,6 +130,7 @@ public class Map {
             node.isVisited = false;
         }
     }
+
 
 
 

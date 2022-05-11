@@ -2,28 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Line : MonoBehaviour {
+public class Line{
+
+    GridArea grid;
 
 
-    public GridArea grid;
-
-    public TestScript script;
-
-
-
-    public void Start() {
-        if (GameObject.FindWithTag(("Grid")) != null) {
-            script = GameObject.FindWithTag(("Grid")).GetComponent<TestScript>();
-        }
+    public Line(GridArea grid){
+        this.grid = grid;
     }
-
-    public void Update() {
-        if (this.grid == null) {
-            this.grid = script.grid;
-        }
-
-    }
-
 
     public GameObject DrawLine(Vector3 start, Vector3 end, Color color, float width = 0.55f) {
         start = get_position(start.x, start.y);

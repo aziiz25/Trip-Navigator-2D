@@ -20,7 +20,7 @@ public class PriorityQueue {
 
     public Nodes Dequeue(MapNode node) {
         foreach (Nodes element in elements) {
-            if (element.to == node) {
+            if (element.to.position == node.position) {
                 elements.Remove(element);
                 size = elements.Count;
                 return element;

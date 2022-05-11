@@ -11,16 +11,22 @@ public class GridArea {
     public float cellSize;
     private Vector3 originPosition;
     public bool isFirstSelected;
-   
 
 
     public Vector3 start;
     public Vector3 end;
 
     public List<MapNode> path;
-    
+
+    public List<DrawPath> path_drown;
 
     public Map map;
+
+    public Astar a_star;
+
+    bool is_blue_dot_moved;
+
+    bool is_red_dot_moved;
 
     public GridArea(int width, int height, float cellSize, string[][] GridValues) {
         this.width = width;
@@ -28,13 +34,17 @@ public class GridArea {
         this.cellSize = cellSize;
         this.originPosition = new Vector3(-(width * cellSize / 2), -(height * cellSize / 2) + 6, 0);
         this.gridArray = GridValues;
+        this.path_drown = new List<DrawPath>();
 
     }
 
 
 
     public Vector3 GetWorldPosition(float x, float y) {
-        return new Vector3(x, y) * cellSize + originPosition;
+        return GetWorldPosition(new Vector3(x, y));
+    }
+    public Vector3 GetWorldPosition(Vector3 position) {
+        return position * cellSize + originPosition;
     }
 
     private void GetXY(Vector3 worldPosition, out int x, out int y) {
@@ -51,23 +61,56 @@ public class GridArea {
                 if (!isFirstSelected) {
                     ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     start = new Vector3(x, y, 0);
+                    is_blue_dot_moved = true;
                 } else {
                     ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     end = new Vector3(x, y, 0);
+                    is_red_dot_moved = true;
                 }
             }
         }
     }
 
     public void confirmStart() {
-        isFirstSelected = true;
+        if (is_blue_dot_moved) {
+            isFirstSelected = true;
+        }
     }
 
-    public void confirmEnd() {
+    public List<List<MapNode>> confirmEnd() {
+        if (!is_red_dot_moved) {
+            return null;
+        }
         isFirstSelected = false;
         this.map = new Map(gridArray, start, end);
-        this.path = create_path();
+        List<List<MapNode>> paths = create_path();
+        return paths;
     }
+
+
+
+    public void draw_paths(List<List<MapNode>> paths) {
+        if (paths.Count == 2 && path_drown.Count < 2) {
+            Color[] color = { Color.green, Color.blue, Color.red };
+            for (int i = 0; i < paths.Count; i++) {
+                path_drown.Add(new DrawPath(paths[i], color[i], this));
+            }
+        }
+    }
+
+    public void draw_path() {
+        path_drown.ForEach(path => path.destroy_road());
+        path_drown.Clear();
+        path_drown.Add(new DrawPath(path, Color.green, this));
+    }
+
+
+    public void choose_path(int index, List<List<MapNode>> paths) {
+        this.path = paths[index];
+    }
+
+
+
     public void SetValue(Vector3 worldPosition, int value) {
         int x, y;
         GetXY(worldPosition, out x, out y);
@@ -106,7 +149,10 @@ public class GridArea {
         }
     }
 
-    public List<MapNode> create_path() {
-        return new Astar(map).get_path();
+
+
+    public List<List<MapNode>> create_path() {
+        this.a_star = new Astar(map);
+        return this.a_star.get_paths();
     }
 }
