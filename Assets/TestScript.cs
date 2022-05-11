@@ -109,6 +109,7 @@ public class TestScript : MonoBehaviour {
             }
         } catch (Exception e) {
             MoveToNoPath();
+            print(e);
         }
     }
 
@@ -152,6 +153,7 @@ public class TestScript : MonoBehaviour {
                 GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.end.x + ", " + grid.end.y;
             } catch (Exception e) {
                 MoveToNoPath();
+                print(e);
             }
         }
     }
