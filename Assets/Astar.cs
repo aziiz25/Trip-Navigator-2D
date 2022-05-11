@@ -32,7 +32,7 @@ public class Astar {
             path.Reverse();
             paths = yenKSP();
             cleanPath();
-        }else{
+        } else {
             throw new InvalidOperationException();
         }
     }
@@ -143,21 +143,41 @@ public class Astar {
     public void update_node_costs(MapNode node, float cost, double location) {
         MapNode node_to_update = map.nodes.Find(n => n.position == node.position);
         if (location == 0) {
+            node.upCost = cost;
+            node.up.downCost = cost;
+            node.upSpeed -= node_to_update.upSpeed * 0.5f;
+            node.up.downSpeed -= node_to_update.downSpeed * 0.5f;
+
             node_to_update.upCost = cost;
             node_to_update.up.downCost = cost;
             node_to_update.upSpeed -= node_to_update.upSpeed * 0.5f;
             node_to_update.up.downSpeed -= node_to_update.downSpeed * 0.5f;
         } else if (location == 1) {
+            node.downCost = cost;
+            node.down.upCost = cost;
+            node.downSpeed -= node_to_update.downSpeed * 0.5f;
+            node.down.upSpeed -= node_to_update.down.upSpeed * 0.5f;
+
             node_to_update.downCost = cost;
             node_to_update.down.upCost = cost;
             node_to_update.downSpeed -= node_to_update.downSpeed * 0.5f;
             node_to_update.down.upSpeed -= node_to_update.down.upSpeed * 0.5f;
         } else if (location == 2) {
+            node.rightCost = cost;
+            node.right.leftCost = cost;
+            node.rightSpeed -= node_to_update.rightSpeed * 0.5f;
+            node.right.leftSpeed -= node_to_update.right.leftSpeed * 0.5f;
+
             node_to_update.rightCost = cost;
             node_to_update.right.leftCost = cost;
             node_to_update.rightSpeed -= node_to_update.rightSpeed * 0.5f;
             node_to_update.right.leftSpeed -= node_to_update.right.leftSpeed * 0.5f;
         } else {
+            node.leftCost = cost;
+            node.left.rightCost = cost;
+            node.leftSpeed -= node_to_update.leftSpeed * 0.5f;
+            node.left.rightSpeed -= node_to_update.left.rightSpeed * 0.5f;
+
             node_to_update.leftCost = cost;
             node_to_update.left.rightCost = cost;
             node_to_update.leftSpeed -= node_to_update.leftSpeed * 0.5f;

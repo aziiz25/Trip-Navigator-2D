@@ -2205,8 +2205,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "No Path  Found \nif you want \nto keep using our system\nclick Back to
-    main menu"
+  m_Text: 'No Path  Found to try our system again click Back to main menu  '
 --- !u!222 &779880426
 CanvasRenderer:
   m_ObjectHideFlags: 0

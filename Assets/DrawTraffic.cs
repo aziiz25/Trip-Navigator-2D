@@ -55,13 +55,13 @@ public class DrawTraffic : MonoBehaviour {
     }
 
     public void add_traffic() {
-        if (traffic != null || path.Count <= 2) {
+        if (traffic != null || path.Count < 5) {
             return;
         }
-        int index = random.Next(3, path.Count);
+        int index = random.Next(4, path.Count);
         int direction = random.Next(0, 4); // 0 == top, 1 == bottom, 2 == right, 3 == left
         float cost = 0;
-        MapNode node_dir;
+        MapNode node_dir = null;
         if (direction == 0) {
             MapNode up = path[index].up;
             if (up != null) {
@@ -94,9 +94,9 @@ public class DrawTraffic : MonoBehaviour {
         car = GameObject.FindWithTag(("Grid")).GetComponent<PathFollower>();
         if (car.path.Count > 1 && traffic != null) {
             grid.a_star.update_node_costs(this.path[index], cost, direction);
-            List<MapNode> path = grid.a_star.find(car.path[car.currentWayPoint + 1]);
+            car.path.ForEach(p => print(p.position));
+            List<MapNode> path = grid.a_star.find(car.path[0]);
             add_to_list(path);
-            path = grid.a_star.cleanPath(path);
             this.path = path;
             this.path.Reverse();
             isTraffic = true;

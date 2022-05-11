@@ -10,7 +10,7 @@ public class PathFollower : MonoBehaviour {
 
     public float speed = 1f;
     private float maxSpeed = 6f;
-    private float minSpeed = 2f;
+    private float minSpeed = 1f;
     private float Acceleration = 2f;
     private float Decelaration = 4f;
     public float timer;
@@ -24,7 +24,7 @@ public class PathFollower : MonoBehaviour {
 
     public static bool arrive = false;
 
-    
+
 
 
 
@@ -153,7 +153,9 @@ public class PathFollower : MonoBehaviour {
     }
 
     void Decelarate() {
-        if (DistanceToNextWaypoint() <= 5f && speed > minSpeed) {
+        // not auccrate you may try to fix it ---
+        float amount = speed + DistanceToNextWaypoint() * 0.1f;
+        if (DistanceToNextWaypoint() <= amount && speed > minSpeed) {
             speed -= Decelaration * Time.deltaTime;
         }
     }

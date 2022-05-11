@@ -194,10 +194,17 @@ public class TestScript : MonoBehaviour {
             double time = car.CalculateExpectedArriveTime();
             double dis = car.CalculateRemainingDistance();
             double speed = car.speed;
-            GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = (int)time + " min";
-            GameObject.Find("Distance").GetComponentInChildren<Text>().text = (int)dis + " km";
+            if ((int)time > 0) {
+                GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = (int)time + " min";
+                GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 48;
+
+            } else {
+                GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = "Less then a min";
+                GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 40;
+            }
+
+            GameObject.Find("Distance").GetComponentInChildren<Text>().text = Math.Round(dis) + " km";
             GameObject.Find("CurrentSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
-            GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 48;
             GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().color = Color.red;
         }
     }
@@ -209,7 +216,7 @@ public class TestScript : MonoBehaviour {
             double dis = car.CalculateTotalDistance();
             double speed = car.CalculateAVGSpeed();
             GameObject.Find("Duration").GetComponentInChildren<Text>().text = (int)time + " min";
-            GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = (int)dis + " km";
+            GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = Math.Round(dis) + " km";
             GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
         }
     }
@@ -236,7 +243,7 @@ public class TestScript : MonoBehaviour {
         foreach (MapNode node in traffic.path) {
             int index = car.path.FindIndex(p => p.position == node.position);
             if (index == -1) {
-                paths.Add(traffic.path);
+                paths.Add(grid.a_star.cleanPath(traffic.path));
                 return;
             }
         }
