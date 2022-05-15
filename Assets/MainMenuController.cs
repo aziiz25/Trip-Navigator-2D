@@ -10,4 +10,8 @@ public class MainMenuController : MonoBehaviour {
         GameManager.instance.CharIndex = selectedMap;
         SceneManager.LoadScene("SampleScene");
     }
+
+    public void Quit(){
+        Application.Quit();
+    }
 }

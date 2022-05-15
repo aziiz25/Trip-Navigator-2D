@@ -10,10 +10,12 @@ public class PathFollower : MonoBehaviour {
 
     public float speed = 1f;
     private float maxSpeed = 6f;
-    private float minSpeed = 1f;
-    private float Acceleration = 2f;
-    private float Decelaration = 4f;
+    private float minSpeed = 2f;
+    private float Acceleration = 5f;
+    private float Decelaration = 10f;
     public float timer;
+    Vector3 beforePassed, afterPassed;
+    float totalPassedDistance;
 
     TestScript script;
 
@@ -34,6 +36,9 @@ public class PathFollower : MonoBehaviour {
         player = GameObject.FindWithTag(("Player"));
         arrive = false;
         timer = 0;
+        beforePassed = new Vector3();
+        afterPassed = new Vector3();
+        totalPassedDistance = 0;
     }
 
     // Update is called once per frame
@@ -106,7 +111,7 @@ public class PathFollower : MonoBehaviour {
                 speed = current.leftSpeed;
             }
         }
-        return speed;
+        return speed * 1.2f;
     }
 
     public bool is_start_end_defult(Vector3 start, Vector3 end) {
@@ -122,15 +127,18 @@ public class PathFollower : MonoBehaviour {
         return grid.GetWorldPosition(x, y) + new Vector3(grid.cellSize / 2, grid.cellSize / 2);
     }
     void move() {
+        
         Drive();
         Accelerate();
-        Decelarate();
+        //Decelarate();
         CalculateTimePassed();
+        
     }
 
     void Drive() {
+        beforePassed = player.transform.position;
         // move towards the next waypoint
-        player.transform.position = Vector3.MoveTowards(player.transform.position, targetWayPoint, speed * Time.deltaTime);
+        player.transform.position = Vector3.MoveTowards(player.transform.position, targetWayPoint, (speed) * Time.deltaTime);
         Vector3 relativePos = targetWayPoint - player.transform.position;
         if (!relativePos.Equals(new Vector3())) {
             float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
@@ -144,6 +152,7 @@ public class PathFollower : MonoBehaviour {
         if (this.end.Equals(player.transform.position)) {
             arrive = true;
         }
+        afterPassed = player.transform.position;
     }
 
     void Accelerate() {
@@ -177,9 +186,22 @@ public class PathFollower : MonoBehaviour {
     }
 
     public float CalculateRemainingDistance() {
-        Vector3 current = player.transform.position;
+        float totalDistance = 0;
+        totalPassedDistance += Vector3.Distance(beforePassed, afterPassed);
+        totalDistance = CalculateTotalDistance() - (totalPassedDistance / 1.2f);
+        return totalDistance;
+    }
 
-        return (end - current).magnitude;
+    public Vector3[] MapNodeToVector(){
+        Vector3[] p = new Vector3[path.Count];
+        for (int i = 0; i < path.Count; i++){
+            p[i] = path[i].position;
+        }
+        return p;
+    }
+
+    public void CalculatePassedDistance(){
+        
     }
 
     public float CalculateAVGSpeed() {
@@ -191,7 +213,7 @@ public class PathFollower : MonoBehaviour {
     }
 
     public float CalculateExpectedArriveTime() {
-        return (CalculateRemainingDistance() / CalculateAVGSpeed());
+        return (CalculateTotalDistance() / CalculateAVGSpeed());
     }
 
     public void CalculateTimePassed() {

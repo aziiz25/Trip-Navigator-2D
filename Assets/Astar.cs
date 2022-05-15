@@ -204,7 +204,24 @@ public class Astar {
             MapNode prev = path[i - 1];
             MapNode curr = path[i];
             MapNode next = path[i + 1];
-            if (prev.position.x == next.position.x || prev.position.y == next.position.y) {
+            /*if (prev.position.x == next.position.x || prev.position.y == next.position.y) {
+                path.RemoveAt(i);
+                i--;
+            }*/
+            if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)){
+                prev.downCost = prev.downCost + curr.downCost;
+                path.RemoveAt(i);
+                i--;
+            } else if ((prev.position.x == next.position.x) && (prev.position.y <= next.position.y)){
+                prev.upCost = prev.upCost + curr.upCost;
+                path.RemoveAt(i);
+                i--;
+            } else if ((prev.position.x > next.position.x) && (prev.position.y == next.position.y)){
+                prev.leftCost = prev.leftCost + curr.leftCost;
+                path.RemoveAt(i);
+                i--;
+            } else if ((prev.position.x <= next.position.x) && (prev.position.y == next.position.y)){
+                prev.rightCost = prev.rightCost + curr.rightCost;
                 path.RemoveAt(i);
                 i--;
             }
@@ -224,6 +241,7 @@ public class Astar {
     public List<List<MapNode>> get_paths() {
         return paths;
     }
+    
 
     public bool check_neighbours(MapNode start) {
         if (start.up == null && start.down == null && start.right == null && start.left == null) {

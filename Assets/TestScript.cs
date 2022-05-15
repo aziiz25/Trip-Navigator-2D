@@ -124,7 +124,7 @@ public class TestScript : MonoBehaviour {
         }
         choose_traffic.SetActive(false);
         car.change_path(paths[1], car.currentWayPoint);
-        paths.RemoveAt(0);
+        //paths.RemoveAt(0);
         grid.draw_path();
         grid.a_star.cleanPath(paths[0]);
     }
@@ -140,7 +140,7 @@ public class TestScript : MonoBehaviour {
             if (!grid.isFirstSelected) {
                 return;
             }
-            GameObject.Find("StartText").GetComponentInChildren<Text>().text = grid.start.x + ", " + grid.start.y;
+            GameObject.Find("StartText").GetComponentInChildren<Text>().text = grid.start.x + "x-axis, " + grid.start.y + "y-axis";
             GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
             GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
             GameObject.Find("EndText").GetComponentInChildren<Text>().color = Color.red;
@@ -150,7 +150,7 @@ public class TestScript : MonoBehaviour {
                 if (grid.isFirstSelected) {
                     return;
                 }
-                GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.end.x + ", " + grid.end.y;
+                GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.start.x + "x-axis, " + grid.start.y + "y-axis";
             } catch (Exception e) {
                 MoveToNoPath();
                 print(e);
@@ -168,32 +168,51 @@ public class TestScript : MonoBehaviour {
     }
 
 
-    public void keep_current_path() {
+    public void ChangePath() {
         if (paths.Count < 2) {
             return;
         }
         choose_traffic.SetActive(false);
-        paths.Remove(paths[1]);
+        //paths.Remove(paths[0]);
         grid.draw_path();
-        car.path = paths[0];
+        car.path = paths[1];
     }
 
-    public void confirmStart() {
-        GameObject.Find("Confirm").GetComponentInChildren<Text>().text = "Confirm End";
-        GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.RemoveListener(confirmStart);
-        GameObject.Find("Confirm").GetComponentInChildren<Button>().onClick.AddListener(confirmEnd);
-        GameObject.Find("Confirm").GetComponentInChildren<Button>().interactable = false;
+    public void CalculateCosts(){
+        float costPath1 = 0;
+        float costPath2 = 0;
+        for (int i = 0; i < paths[0].Count - 1; i++){
+            if ((paths[0][i].position.x == paths[0][i + 1].position.x) && (paths[0][i].position.y > paths[0][i + 1].position.y)){
+                costPath1 += paths[0][i].downCost;
+            } else if ((paths[0][i].position.x == paths[0][i + 1].position.x) && (paths[0][i].position.y <= paths[0][i + 1].position.y)){
+                costPath1 += paths[0][i].upCost;
+            } else if ((paths[0][i].position.x > paths[0][i + 1].position.x) && (paths[0][i].position.y == paths[0][i + 1].position.y)){
+                costPath1 += paths[0][i].leftCost;
+            } else if ((paths[0][i].position.x <= paths[0][i + 1].position.x) && (paths[0][i].position.y == paths[0][i + 1].position.y)){
+                costPath1 += paths[0][i].rightCost;
+            }
+        }
+        GameObject.Find("Path1").GetComponentInChildren<Text>().text = "Green\nTime:  "+"12" + " mins";
 
+        if (paths.Count > 1 ){
+        for (int i = 0; i < paths[1].Count - 1; i++){
+            if ((paths[1][i].position.x == paths[1][i + 1].position.x) && (paths[1][i].position.y > paths[1][i + 1].position.y)){
+                costPath2 += paths[1][i].downCost;
+            } else if ((paths[1][i].position.x == paths[1][i + 1].position.x) && (paths[1][i].position.y <= paths[1][i + 1].position.y)){
+                costPath2 += paths[1][i].upCost;
+            } else if ((paths[1][i].position.x > paths[1][i + 1].position.x) && (paths[1][i].position.y == paths[1][i + 1].position.y)){
+                costPath2 += paths[1][i].leftCost;
+            } else if ((paths[1][i].position.x <= paths[1][i + 1].position.x) && (paths[1][i].position.y == paths[1][i + 1].position.y)){
+                costPath2 += paths[1][i].rightCost;
+            }
+        }
+        GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime:  "+"14" + " mins";
+        }
     }
-
-    public void confirmEnd() {
-        grid.confirmEnd();
-    }
-
 
     public void run_info() {
         if (car.path != null) {
-            double time = car.CalculateExpectedArriveTime();
+            double time = car.CalculateExpectedArriveTime() - car.timer;
             double dis = car.CalculateRemainingDistance();
             double speed = car.speed;
             if ((int)time > 0) {
@@ -219,7 +238,7 @@ public class TestScript : MonoBehaviour {
             double speed = car.CalculateAVGSpeed();
             GameObject.Find("Duration").GetComponentInChildren<Text>().text = (int)time + " min";
             GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = Math.Round(dis) + " km";
-            GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
+            GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = (int)speed + " km/min";
         }
     }
 
@@ -271,16 +290,17 @@ public class TestScript : MonoBehaviour {
     }
 
 
-    public void MoveToChoosePath() {
+    public void MoveToChoosePath() {   
         start.SetActive(false);
         select_path.SetActive(true);
         choose_traffic.SetActive(false);
         run.SetActive(false);
         summary.SetActive(false);
+        CalculateCosts();
     }
 
     public void MoveToChooseRoadWithTraffic() {
-        if (paths.Count < 2) {
+        if (paths.Count < 2 || check_user_path_action) {
             choose_traffic.SetActive(false);
         } else {
             choose_traffic.SetActive(true);
