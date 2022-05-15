@@ -182,35 +182,11 @@ public class TestScript : MonoBehaviour {
     }
 
     public void CalculateCosts() {
-        float costPath1 = 0;
-        float costPath2 = 0;
-        for (int i = 0; i < paths[0].Count - 1; i++) {
-            if ((paths[0][i].position.x == paths[0][i + 1].position.x) && (paths[0][i].position.y > paths[0][i + 1].position.y)) {
-                costPath1 += paths[0][i].downCost;
-            } else if ((paths[0][i].position.x == paths[0][i + 1].position.x) && (paths[0][i].position.y <= paths[0][i + 1].position.y)) {
-                costPath1 += paths[0][i].upCost;
-            } else if ((paths[0][i].position.x > paths[0][i + 1].position.x) && (paths[0][i].position.y == paths[0][i + 1].position.y)) {
-                costPath1 += paths[0][i].leftCost;
-            } else if ((paths[0][i].position.x <= paths[0][i + 1].position.x) && (paths[0][i].position.y == paths[0][i + 1].position.y)) {
-                costPath1 += paths[0][i].rightCost;
-            }
-        }
-        GameObject.Find("Path1").GetComponentInChildren<Text>().text = "Green\nTime:  " + "12" + " mins";
-
-        if (paths.Count > 1) {
-            for (int i = 0; i < paths[1].Count - 1; i++) {
-                if ((paths[1][i].position.x == paths[1][i + 1].position.x) && (paths[1][i].position.y > paths[1][i + 1].position.y)) {
-                    costPath2 += paths[1][i].downCost;
-                } else if ((paths[1][i].position.x == paths[1][i + 1].position.x) && (paths[1][i].position.y <= paths[1][i + 1].position.y)) {
-                    costPath2 += paths[1][i].upCost;
-                } else if ((paths[1][i].position.x > paths[1][i + 1].position.x) && (paths[1][i].position.y == paths[1][i + 1].position.y)) {
-                    costPath2 += paths[1][i].leftCost;
-                } else if ((paths[1][i].position.x <= paths[1][i + 1].position.x) && (paths[1][i].position.y == paths[1][i + 1].position.y)) {
-                    costPath2 += paths[1][i].rightCost;
-                }
-            }
-            GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime:  " + "14" + " mins";
-        }
+        float costPath1 = car.CalculateExpectedArriveTime(paths[0]);
+        float costPath2 = car.CalculateExpectedArriveTime(paths[1]);
+        GameObject.Find("Path1").GetComponentInChildren<Text>().text = "Green\nTime:  " + (int)costPath1 + " mins";
+        GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime:  " + (int)costPath2 + " mins";
+        
     }
 
     public void run_info() {

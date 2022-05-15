@@ -43,7 +43,6 @@
      <Compile Include="Assets\MainMenuController.cs" />
      <Compile Include="Assets\PriorityQueue.cs" />
      <Compile Include="Assets\ControlSecondDot.cs" />
-     <Compile Include="Assets\TrafficSystem.cs" />
      <Compile Include="Assets\PathFollower.cs" />
      <Compile Include="Assets\GridArea.cs" />
      <Compile Include="Assets\GameManager.cs" />
