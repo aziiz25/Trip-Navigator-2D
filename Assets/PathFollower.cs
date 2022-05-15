@@ -10,7 +10,7 @@ public class PathFollower : MonoBehaviour {
 
     public float speed = 1f;
     private float maxSpeed = 6f;
-    private float minSpeed = 2f;
+    private float minSpeed = 0.5f;
     private float Acceleration = 5f;
     private float Decelaration = 10f;
     public float timer;
@@ -64,6 +64,8 @@ public class PathFollower : MonoBehaviour {
         if (!grid.isFirstSelected) {
             targetWayPoint = get_position(this.path[currentWayPoint].position);
             maxSpeed = getSpeed(currentWayPoint);
+            print(maxSpeed);
+            print(speed);
             move();
         } else {
             if (grid.isFirstSelected) {
@@ -93,25 +95,32 @@ public class PathFollower : MonoBehaviour {
         return true;
     }
 
-
     private float getSpeed(int targetIndex) {
-        var current = this.path[targetIndex - 1];
-        var next = this.path[targetIndex];
+        return getSpeed(targetIndex, this.path);
+    }
+    private float getSpeed(int targetIndex, List<MapNode> path) {
+        var current = path[targetIndex - 1];
+        var next = path[targetIndex];
         float speed;
+        float cost;
         if (next.position.x - current.position.x == 0) {
             if (next.position.y - current.position.y > 0) {
                 speed = current.upSpeed;
+                cost = current.upCost;
             } else {
                 speed = current.downSpeed;
+                cost = current.downCost;
             }
         } else {
             if (next.position.x - current.position.x > 0) {
                 speed = current.rightSpeed;
+                cost = current.rightCost;
             } else {
                 speed = current.leftSpeed;
+                cost = current.leftCost;
             }
         }
-        return speed * 1.2f;
+        return speed;
     }
 
     public bool is_start_end_defult(Vector3 start, Vector3 end) {
@@ -127,12 +136,12 @@ public class PathFollower : MonoBehaviour {
         return grid.GetWorldPosition(x, y) + new Vector3(grid.cellSize / 2, grid.cellSize / 2);
     }
     void move() {
-        
+
         Drive();
         Accelerate();
-        //Decelarate();
+        Decelarate();
         CalculateTimePassed();
-        
+
     }
 
     void Drive() {
@@ -176,9 +185,13 @@ public class PathFollower : MonoBehaviour {
 
 
     public float CalculateTotalDistance() {
+        return CalculateTotalDistance(this.path);
+    }
+
+    public float CalculateTotalDistance(List<MapNode> path) {
         float totalDistance = 0;
         if (path != null) {
-            for (int i = 0; i < (this.path.Count - 1); i++) {
+            for (int i = 0; i < (path.Count - 1); i++) {
                 totalDistance += Vector3.Distance(path[i].position, path[i + 1].position);
             }
         }
@@ -192,28 +205,35 @@ public class PathFollower : MonoBehaviour {
         return totalDistance;
     }
 
-    public Vector3[] MapNodeToVector(){
+    public Vector3[] MapNodeToVector() {
         Vector3[] p = new Vector3[path.Count];
-        for (int i = 0; i < path.Count; i++){
+        for (int i = 0; i < path.Count; i++) {
             p[i] = path[i].position;
         }
         return p;
     }
 
-    public void CalculatePassedDistance(){
-        
+    public void CalculatePassedDistance() {
+
     }
 
     public float CalculateAVGSpeed() {
+        return CalculateAVGSpeed(this.path);
+    }
+    public float CalculateAVGSpeed(List<MapNode> path) {
         float speed = 0;
-        for (int i = 1; i < (this.path.Count); i++) {
-            speed += getSpeed(i);
+        for (int i = 1; i < (path.Count); i++) {
+            speed += getSpeed(i, path);
         }
         return speed / path.Count;
     }
 
     public float CalculateExpectedArriveTime() {
         return (CalculateTotalDistance() / CalculateAVGSpeed());
+    }
+
+    public float CalculateExpectedArriveTime(List<MapNode> path) {
+        return (CalculateTotalDistance(path) / CalculateAVGSpeed(path));
     }
 
     public void CalculateTimePassed() {
