@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using UnityEngine.UI;
 
 public class GridArea {
 
@@ -11,6 +12,7 @@ public class GridArea {
     public float cellSize;
     private Vector3 originPosition;
     public bool isFirstSelected;
+    float cost;
 
 
     public Vector3 start;
@@ -61,10 +63,12 @@ public class GridArea {
                 if (!isFirstSelected) {
                     ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     start = new Vector3(x, y, 0);
+                    GameObject.Find("StartText").GetComponentInChildren<Text>().text = "Start Point: \n"+ x +" x-axis, " + y + " y-axis";
                     is_blue_dot_moved = true;
                 } else {
                     ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     end = new Vector3(x, y, 0);
+                    GameObject.Find("EndText").GetComponentInChildren<Text>().text = "End Point: \n"+ x +" x-axis, " + y + " y-axis";
                     is_red_dot_moved = true;
                 }
             }
@@ -107,6 +111,7 @@ public class GridArea {
 
     public void choose_path(int index, List<List<MapNode>> paths) {
         this.path = paths[index];
+
     }
 
 
