@@ -10,7 +10,7 @@ public class PathFollower : MonoBehaviour {
 
     public float speed = 1f;
     private float maxSpeed = 6f;
-    private float minSpeed = 0.5f;
+    private float minSpeed = 1f;
     private float Acceleration = 5f;
     private float Decelaration = 10f;
     public float timer;

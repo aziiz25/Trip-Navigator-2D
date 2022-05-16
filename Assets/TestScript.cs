@@ -229,7 +229,7 @@ public class TestScript : MonoBehaviour {
             }
 
             GameObject.Find("Distance").GetComponentInChildren<Text>().text = Math.Round(dis) + " km";
-            GameObject.Find("CurrentSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
+            GameObject.Find("CurrentSpeed").GetComponentInChildren<Text>().text = speed.ToString("0.0 km/min");
             GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().color = Color.red;
         }
     }
