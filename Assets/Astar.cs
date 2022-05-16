@@ -72,6 +72,9 @@ public class Astar {
         return get_optimal_path(start);
     }
 
+    /*
+    for finding adj node and add them to open queue
+    */
     public void update_adj_nodes() {
         MapNode adj_node = closed[closed.Count - 1].Key;
         foreach (Nodes node in open_queue.get_Queue()) {
@@ -139,7 +142,7 @@ public class Astar {
         return path;
     }
 
-
+    // update node cost when the traffic occur -- its done like this to avoid refrensing problem 
     public void update_node_costs(MapNode node, float cost, double location) {
         MapNode node_to_update = map.nodes.Find(n => n.position == node.position);
         if (location == 0) {
@@ -188,7 +191,9 @@ public class Astar {
     public void create_pair(MapNode node, MapNode from = null, double g_cost = 1000000, double f_cost = 1000000) {
         open_queue.Enqueue(node, from, g_cost, f_cost);
     }
+    
 
+    // cost function  manhatten distance devided by max speed
     public double total_cost(MapNode node, double cost) {
         double dx = Math.Abs(node.position.x - end.position.x);
         double dy = Math.Abs(node.position.y - end.position.y);
@@ -204,10 +209,6 @@ public class Astar {
             MapNode prev = path[i - 1];
             MapNode curr = path[i];
             MapNode next = path[i + 1];
-            /*if (prev.position.x == next.position.x || prev.position.y == next.position.y) {
-                path.RemoveAt(i);
-                i--;
-            }*/
             if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)){
                 prev.downCost = prev.downCost + curr.downCost;
                 path.RemoveAt(i);
@@ -250,6 +251,8 @@ public class Astar {
         return false;
     }
 
+
+    //* yen ksp to find k paths 
     public List<List<MapNode>> yenKSP() {
         List<List<MapNode>> paths = new List<List<MapNode>>();
         paths.Add(path);
@@ -257,7 +260,7 @@ public class Astar {
         int number_of_paths = 2;
         for (int k = 1; k < number_of_paths; k++) {
             for (int i = 0; i < paths[k - 1].Count() - 2; i++) {
-                MapNode spurNode = get_sput_new_ref(paths[k - 1][i]);
+                MapNode spurNode = get_spur_new_ref(paths[k - 1][i]);
                 List<MapNode> root_path = get_node_from(paths[k - 1], 0, i);
                 foreach (List<MapNode> path in paths) {
                     if (equal_path(root_path, get_node_from(path, 0, i))) {
@@ -303,7 +306,9 @@ public class Astar {
         return nodes;
     }
 
-
+    /*
+    remove links found in previous path
+    */
     public void remove_edges(MapNode node, MapNode next_node) {
         MapNode temp_node = map.nodes.Find(n => node.position == n.position);
         MapNode temp_next_node = map.nodes.Find(n => next_node.position == n.position);
@@ -345,6 +350,7 @@ public class Astar {
         return true;
     }
 
+    // remove orginal path from the graph
     public void remove_from_graph(List<MapNode> root_path, MapNode spur_node) {
         foreach (MapNode node in root_path) {
             if (node.position == spur_node.position) {
@@ -376,7 +382,7 @@ public class Astar {
         return check;
     }
 
-    public MapNode get_sput_new_ref(MapNode spur_node) {
+    public MapNode get_spur_new_ref(MapNode spur_node) {
         foreach (MapNode node in this.map.nodes) {
             if (node.position == spur_node.position) {
                 return node;

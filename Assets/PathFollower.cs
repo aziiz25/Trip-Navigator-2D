@@ -64,8 +64,6 @@ public class PathFollower : MonoBehaviour {
         if (!grid.isFirstSelected) {
             targetWayPoint = get_position(this.path[currentWayPoint].position);
             maxSpeed = getSpeed(currentWayPoint);
-            print(maxSpeed);
-            print(speed);
             move();
         } else {
             if (grid.isFirstSelected) {
