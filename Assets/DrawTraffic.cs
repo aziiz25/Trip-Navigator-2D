@@ -65,28 +65,28 @@ public class DrawTraffic : MonoBehaviour {
         if (direction == 0) {
             MapNode up = path[index].up;
             if (up != null) {
-                cost = path[index].upCost + path[index].upCost * multiplier + 500000;
+                cost = path[index].upCost + path[index].upCost * multiplier + 0;
                 traffic = line.DrawLine(path[index].position, up.position, Color.red, 1);
                 node_dir = up;
             }
         } else if (direction == 1) {
             MapNode down = path[index].down;
             if (down != null) {
-                cost = path[index].downCost + path[index].downCost * multiplier + 500000;
+                cost = path[index].downCost + path[index].downCost * multiplier + 0;
                 traffic = line.DrawLine(path[index].position, down.position, Color.red, 1);
                 node_dir = down;
             }
         } else if (direction == 2) {
             MapNode right = path[index].right;
             if (right != null) {
-                cost = path[index].rightCost + path[index].rightCost * multiplier + 500000;
+                cost = path[index].rightCost + path[index].rightCost * multiplier + 0;
                 traffic = line.DrawLine(path[index].position, right.position, Color.red, 1);
                 node_dir = right;
             }
         } else {
             MapNode left = path[index].left;
             if (left != null) {
-                cost = path[index].leftCost + path[index].leftCost * multiplier + 500000;
+                cost = path[index].leftCost + path[index].leftCost * multiplier + 0;
                 traffic = line.DrawLine(path[index].position, left.position, Color.red, 1);
                 node_dir = left;
             }
@@ -94,7 +94,6 @@ public class DrawTraffic : MonoBehaviour {
         car = GameObject.FindWithTag(("Grid")).GetComponent<PathFollower>();
         if (car.path.Count > 1 && traffic != null) {
             grid.a_star.update_node_costs(this.path[index], cost, direction);
-            car.path.ForEach(p => print(p.position));
             List<MapNode> path = grid.a_star.find(car.path[0]);
             add_to_list(path);
             this.path = path;

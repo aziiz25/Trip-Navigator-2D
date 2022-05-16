@@ -34,6 +34,10 @@ public class TestScript : MonoBehaviour {
 
     bool check_user_path_action;
 
+
+    /*
+    For state initialization 
+    */
     private void Awake() {
         start = GameObject.Find("Start");
         select_path = GameObject.Find("SelectPath");
@@ -45,7 +49,9 @@ public class TestScript : MonoBehaviour {
         no_path = GameObject.Find("NoPath");
     }
 
-
+    /*
+    Load variable 
+    */
     void Start() {
         start.SetActive(true);
         select_path.SetActive(false);
@@ -65,6 +71,7 @@ public class TestScript : MonoBehaviour {
     }
 
     // Update is called once per frame
+    // main loop of the program
     void Update() {
         try {
             if (Input.GetMouseButtonDown(0) && IsStartActive()) {
@@ -78,6 +85,8 @@ public class TestScript : MonoBehaviour {
             }
             if (grid.path == null && paths != null) {
                 grid.draw_paths(paths);
+                changeStart.SetActive(true);
+                changeEnd.SetActive(true);
                 MoveToChoosePath();
                 if (paths.Count < 2 && GameObject.Find("Path2") != null) {
                     GameObject.Find("Path2").SetActive(false);
@@ -95,7 +104,7 @@ public class TestScript : MonoBehaviour {
             if (traffic.isTraffic && !check_user_path_action) {
                 check_not_equal_path();
                 grid.draw_paths(paths);
-                MoveToChooseRoadWithTraffic();
+                MoveToChooseRoadWithOutTraffic();
             }
             if (choose_traffic.activeSelf) {
                 StartCoroutine(user_actions());
@@ -113,13 +122,19 @@ public class TestScript : MonoBehaviour {
         }
     }
 
-
+    /*
+    Get where the user click on the Screen
+    */
     public Vector3 GetMousePositionWorld() {
         Vector3 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         vec.z = 0f;
         return vec;
     }
 
+
+    /*
+    Regaring the user chooseing points 
+    */
     public void Confirm() {
         if (!grid.isFirstSelected && grid.start != null) {
             grid.confirmStart();
@@ -130,13 +145,15 @@ public class TestScript : MonoBehaviour {
             GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
             GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
             GameObject.Find("EndText").GetComponentInChildren<Text>().color = Color.red;
+            changeStart.SetActive(true);
         } else {
             try {
-                paths = grid.confirmEnd();
+                grid.confirmEnd();
                 if (grid.isFirstSelected) {
                     return;
                 }
                 GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.start.x + "x-axis, " + grid.start.y + "y-axis";
+                paths = grid.Start();
             } catch (Exception e) {
                 MoveToNoPath();
                 print(e);
@@ -144,7 +161,31 @@ public class TestScript : MonoBehaviour {
         }
     }
 
+    public void ChangeStart() {
+        if (paths != null) {
+            paths = null;
+            MoveToStart();
+            grid.delete_paths();
 
+        }
+        grid.isFirstSelected = false;
+        changeStart.SetActive(false);
+    }
+
+    public void ChangeEnd() {
+        if (paths != null) {
+            paths = null;
+            MoveToStart();
+            grid.delete_paths();
+        }
+        grid.isFirstSelected = true;
+        changeEnd.SetActive(false);
+    }
+
+    /*
+    those two methods linked to two button on the ui based on what the user select
+    the path will be chosen
+    */
     public void ChoosePath1() {
         grid.choose_path(0, paths);
     }
@@ -153,7 +194,10 @@ public class TestScript : MonoBehaviour {
         grid.choose_path(1, paths);
     }
 
-
+    /*
+    This linked to a button on the screen that change the path if the user click on change path 
+    the button will be shown for 3 sec if the user click then the car will go to the better path
+    */
     public void ChangePath() {
         if (paths.Count < 2) {
             return;
@@ -165,12 +209,16 @@ public class TestScript : MonoBehaviour {
         grid.a_star.cleanPath(paths[0]);
     }
 
-
+    /*
+    This method will wait for the user action for 3 sec if the user didnt do 
+    anything the car will stay on path and the button will disappair
+    */
     public IEnumerator user_actions() {
         yield return new WaitForSeconds(3);
         change_path_action();
     }
 
+    //linked to above method
     public void change_path_action() {
         if (paths.Count < 2) {
             return;
@@ -181,46 +229,48 @@ public class TestScript : MonoBehaviour {
         car.path = paths[0];
     }
 
+    // showning cost to the user when he tries to choose a path
     public void CalculateCosts() {
         float costPath1 = car.CalculateExpectedArriveTime(paths[0]);
-        float costPath2 = car.CalculateExpectedArriveTime(paths[1]);
         GameObject.Find("Path1").GetComponentInChildren<Text>().text = "Green\nTime:  " + (int)costPath1 + " mins";
-        GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime:  " + (int)costPath2 + " mins";
-        
+        if (paths.Count == 2) {
+            float costPath2 = car.CalculateExpectedArriveTime(paths[1]);
+            GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime:  " + (int)costPath2 + " mins";
+        }
     }
 
+    // showing info during the trip
     public void run_info() {
         if (car.path != null) {
-            double time = car.CalculateExpectedArriveTime() - car.timer;
             double dis = car.CalculateRemainingDistance();
             double speed = car.speed;
+            double time = dis / speed;
             if ((int)time > 0) {
                 GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = (int)time + " min";
                 GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 48;
-
             } else {
                 GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = "Less then a min";
                 GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 40;
             }
 
             GameObject.Find("Distance").GetComponentInChildren<Text>().text = Math.Round(dis) + " km";
-            GameObject.Find("CurrentSpeed").GetComponentInChildren<Text>().text = (int)speed + " km";
+            GameObject.Find("CurrentSpeed").GetComponentInChildren<Text>().text = speed.ToString("0.0 km/min");
             GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().color = Color.red;
         }
     }
 
-
+    //show summary after the trip ends
     public void summary_info() {
         if (car.path != null) {
             double time = car.timer;
             double dis = car.CalculateTotalDistance();
-            double speed = car.CalculateAVGSpeed();
+            double speed = dis / time;
             GameObject.Find("Duration").GetComponentInChildren<Text>().text = (int)time + " min";
-            GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = Math.Round(dis) + " km";
-            GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = (int)speed + " km/min";
+            GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = dis.ToString("0.00 km");
+            GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = speed.ToString("0.00 km/min");
         }
     }
-
+    // reading the map
     public string[][] readMapData(string filePath) {
         string[][] values = new string[88][];
         string[] text = System.IO.File.ReadAllLines(@filePath);
@@ -237,9 +287,9 @@ public class TestScript : MonoBehaviour {
         return values;
     }
 
-
+    // check if path not equal
     public void check_not_equal_path() {
-        // if node note fount
+        // if node not found
         foreach (MapNode node in traffic.path) {
             int index = car.path.FindIndex(p => p.position == node.position);
             if (index == -1) {
@@ -248,6 +298,7 @@ public class TestScript : MonoBehaviour {
             }
         }
     }
+
     public void MainMenu() {
         SceneManager.LoadScene("MainMenu");
     }
@@ -277,8 +328,8 @@ public class TestScript : MonoBehaviour {
         summary.SetActive(false);
         CalculateCosts();
     }
-
-    public void MoveToChooseRoadWithTraffic() {
+    //for choose traffic starte
+    public void MoveToChooseRoadWithOutTraffic() {
         if (paths.Count < 2 || check_user_path_action) {
             choose_traffic.SetActive(false);
         } else {
@@ -287,6 +338,12 @@ public class TestScript : MonoBehaviour {
         check_user_path_action = true;
     }
 
+    public void MoveToStart() {
+        start.SetActive(true);
+        select_path.SetActive(false);
+        run.SetActive(true);
+        summary.SetActive(false);
+    }
 
     public void MoveToRun() {
         start.SetActive(false);

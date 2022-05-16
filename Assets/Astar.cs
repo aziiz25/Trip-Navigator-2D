@@ -33,7 +33,8 @@ public class Astar {
             paths = yenKSP();
             cleanPath();
         } else {
-            throw new InvalidOperationException();
+            //throw new InvalidOperationException();
+            Debug.Log(start.down);
         }
     }
 
@@ -66,12 +67,18 @@ public class Astar {
             update_adj_nodes();
             add_to_close();
             if (size == open_queue.size || check_neighbours(closed[closed.Count - 1].Key)) {
+                if (closed[closed.Count - 1].Key.position == this.end.position) {
+                    continue;
+                }
                 return null;
             }
         }
         return get_optimal_path(start);
     }
 
+    /*
+    for finding adj node and add them to open queue
+    */
     public void update_adj_nodes() {
         MapNode adj_node = closed[closed.Count - 1].Key;
         foreach (Nodes node in open_queue.get_Queue()) {
@@ -135,53 +142,52 @@ public class Astar {
                 }
             }
         }
-        //path.Add(prev);
         return path;
     }
 
-
+    // update node cost when the traffic occur -- its done like this to avoid refrensing problem 
     public void update_node_costs(MapNode node, float cost, double location) {
         MapNode node_to_update = map.nodes.Find(n => n.position == node.position);
         if (location == 0) {
             node.upCost = cost;
             node.up.downCost = cost;
-            node.upSpeed -= node_to_update.upSpeed * 0.99f;
-            node.up.downSpeed -= node_to_update.downSpeed * 0.99f;
+            node.upSpeed -= node_to_update.upSpeed * 0.5f;
+            node.up.downSpeed -= node_to_update.downSpeed * 0.5f;
 
             node_to_update.upCost = cost;
             node_to_update.up.downCost = cost;
-            node_to_update.upSpeed -= node_to_update.upSpeed * 0.99f;
-            node_to_update.up.downSpeed -= node_to_update.downSpeed * 0.99f;
+            node_to_update.upSpeed -= node_to_update.upSpeed * 0.5f;
+            node_to_update.up.downSpeed -= node_to_update.downSpeed * 0.5f;
         } else if (location == 1) {
             node.downCost = cost;
             node.down.upCost = cost;
-            node.downSpeed -= node_to_update.downSpeed * 0.99f;
-            node.down.upSpeed -= node_to_update.down.upSpeed * 0.99f;
+            node.downSpeed -= node_to_update.downSpeed * 0.5f;
+            node.down.upSpeed -= node_to_update.down.upSpeed * 0.5f;
 
             node_to_update.downCost = cost;
             node_to_update.down.upCost = cost;
-            node_to_update.downSpeed -= node_to_update.downSpeed * 0.99f;
-            node_to_update.down.upSpeed -= node_to_update.down.upSpeed * 0.99f;
+            node_to_update.downSpeed -= node_to_update.downSpeed * 0.5f;
+            node_to_update.down.upSpeed -= node_to_update.down.upSpeed * 0.5f;
         } else if (location == 2) {
             node.rightCost = cost;
             node.right.leftCost = cost;
-            node.rightSpeed -= node_to_update.rightSpeed *0.99f;
-            node.right.leftSpeed -= node_to_update.right.leftSpeed *0.99f;
+            node.rightSpeed -= node_to_update.rightSpeed * 0.5f;
+            node.right.leftSpeed -= node_to_update.right.leftSpeed * 0.5f;
 
             node_to_update.rightCost = cost;
             node_to_update.right.leftCost = cost;
-            node_to_update.rightSpeed -= node_to_update.rightSpeed * 0.99f;
-            node_to_update.right.leftSpeed -= node_to_update.right.leftSpeed * 0.99f;
+            node_to_update.rightSpeed -= node_to_update.rightSpeed * 0.5f;
+            node_to_update.right.leftSpeed -= node_to_update.right.leftSpeed * 0.5f;
         } else {
             node.leftCost = cost;
             node.left.rightCost = cost;
-            node.leftSpeed -= node_to_update.leftSpeed * 0.99f;
-            node.left.rightSpeed -= node_to_update.left.rightSpeed * 0.99f;
+            node.leftSpeed -= node_to_update.leftSpeed * 0.5f;
+            node.left.rightSpeed -= node_to_update.left.rightSpeed * 0.5f;
 
             node_to_update.leftCost = cost;
             node_to_update.left.rightCost = cost;
-            node_to_update.leftSpeed -= node_to_update.leftSpeed * 0.99f;
-            node_to_update.left.rightSpeed -= node_to_update.left.rightSpeed * 0.99f;
+            node_to_update.leftSpeed -= node_to_update.leftSpeed * 0.5f;
+            node_to_update.left.rightSpeed -= node_to_update.left.rightSpeed * 0.5f;
         }
     }
 
@@ -189,6 +195,8 @@ public class Astar {
         open_queue.Enqueue(node, from, g_cost, f_cost);
     }
 
+
+    // cost function  manhatten distance devided by max speed
     public double total_cost(MapNode node, double cost) {
         double dx = Math.Abs(node.position.x - end.position.x);
         double dy = Math.Abs(node.position.y - end.position.y);
@@ -204,23 +212,19 @@ public class Astar {
             MapNode prev = path[i - 1];
             MapNode curr = path[i];
             MapNode next = path[i + 1];
-            /*if (prev.position.x == next.position.x || prev.position.y == next.position.y) {
-                path.RemoveAt(i);
-                i--;
-            }*/
-            if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)){
+            if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)) {
                 prev.downCost = prev.downCost + curr.downCost;
                 path.RemoveAt(i);
                 i--;
-            } else if ((prev.position.x == next.position.x) && (prev.position.y <= next.position.y)){
+            } else if ((prev.position.x == next.position.x) && (prev.position.y <= next.position.y)) {
                 prev.upCost = prev.upCost + curr.upCost;
                 path.RemoveAt(i);
                 i--;
-            } else if ((prev.position.x > next.position.x) && (prev.position.y == next.position.y)){
+            } else if ((prev.position.x > next.position.x) && (prev.position.y == next.position.y)) {
                 prev.leftCost = prev.leftCost + curr.leftCost;
                 path.RemoveAt(i);
                 i--;
-            } else if ((prev.position.x <= next.position.x) && (prev.position.y == next.position.y)){
+            } else if ((prev.position.x <= next.position.x) && (prev.position.y == next.position.y)) {
                 prev.rightCost = prev.rightCost + curr.rightCost;
                 path.RemoveAt(i);
                 i--;
@@ -241,7 +245,7 @@ public class Astar {
     public List<List<MapNode>> get_paths() {
         return paths;
     }
-    
+
 
     public bool check_neighbours(MapNode start) {
         if (start.up == null && start.down == null && start.right == null && start.left == null) {
@@ -250,6 +254,8 @@ public class Astar {
         return false;
     }
 
+
+    //* yen ksp to find k paths 
     public List<List<MapNode>> yenKSP() {
         List<List<MapNode>> paths = new List<List<MapNode>>();
         paths.Add(path);
@@ -257,7 +263,7 @@ public class Astar {
         int number_of_paths = 2;
         for (int k = 1; k < number_of_paths; k++) {
             for (int i = 0; i < paths[k - 1].Count() - 2; i++) {
-                MapNode spurNode = get_sput_new_ref(paths[k - 1][i]);
+                MapNode spurNode = get_spur_new_ref(paths[k - 1][i]);
                 List<MapNode> root_path = get_node_from(paths[k - 1], 0, i);
                 foreach (List<MapNode> path in paths) {
                     if (equal_path(root_path, get_node_from(path, 0, i))) {
@@ -303,7 +309,9 @@ public class Astar {
         return nodes;
     }
 
-
+    /*
+    remove links found in previous path
+    */
     public void remove_edges(MapNode node, MapNode next_node) {
         MapNode temp_node = map.nodes.Find(n => node.position == n.position);
         MapNode temp_next_node = map.nodes.Find(n => next_node.position == n.position);
@@ -345,6 +353,7 @@ public class Astar {
         return true;
     }
 
+    // remove orginal path from the graph
     public void remove_from_graph(List<MapNode> root_path, MapNode spur_node) {
         foreach (MapNode node in root_path) {
             if (node.position == spur_node.position) {
@@ -376,7 +385,7 @@ public class Astar {
         return check;
     }
 
-    public MapNode get_sput_new_ref(MapNode spur_node) {
+    public MapNode get_spur_new_ref(MapNode spur_node) {
         foreach (MapNode node in this.map.nodes) {
             if (node.position == spur_node.position) {
                 return node;
