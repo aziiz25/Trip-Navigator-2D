@@ -63,12 +63,12 @@ public class GridArea {
                 if (!isFirstSelected) {
                     ControlFirstDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     start = new Vector3(x, y, 0);
-                    GameObject.Find("StartText").GetComponentInChildren<Text>().text = "Start Point: \n"+ x +" x-axis, " + y + " y-axis";
+                    GameObject.Find("StartText").GetComponentInChildren<Text>().text = "Start Point: \n" + x + " x-axis, " + y + " y-axis";
                     is_blue_dot_moved = true;
                 } else {
                     ControlSecondDot.Instance.Translate(GetWorldPosition(x, y) + new Vector3(cellSize / 2, cellSize / 2));
                     end = new Vector3(x, y, 0);
-                    GameObject.Find("EndText").GetComponentInChildren<Text>().text = "End Point: \n"+ x +" x-axis, " + y + " y-axis";
+                    GameObject.Find("EndText").GetComponentInChildren<Text>().text = "End Point: \n" + x + " x-axis, " + y + " y-axis";
                     is_red_dot_moved = true;
                 }
             }
@@ -81,16 +81,19 @@ public class GridArea {
         }
     }
 
-    public List<List<MapNode>> confirmEnd() {
+    public void confirmEnd() {
         if (!is_red_dot_moved) {
-            return null;
+            return;
         }
         isFirstSelected = false;
+        return;
+    }
+
+    public List<List<MapNode>> Start() {
         this.map = new Map(gridArray, start, end);
         List<List<MapNode>> paths = create_path();
         return paths;
     }
-
 
 
     public void draw_paths(List<List<MapNode>> paths) {
@@ -103,15 +106,18 @@ public class GridArea {
     }
 
     public void draw_path() {
+        delete_paths();
+        path_drown.Add(new DrawPath(path, Color.green, this));
+    }
+
+    public void delete_paths() {
         path_drown.ForEach(path => path.destroy_road());
         path_drown.Clear();
-        path_drown.Add(new DrawPath(path, Color.green, this));
     }
 
 
     public void choose_path(int index, List<List<MapNode>> paths) {
         this.path = paths[index];
-
     }
 
 

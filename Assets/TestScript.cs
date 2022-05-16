@@ -85,6 +85,8 @@ public class TestScript : MonoBehaviour {
             }
             if (grid.path == null && paths != null) {
                 grid.draw_paths(paths);
+                changeStart.SetActive(true);
+                changeEnd.SetActive(true);
                 MoveToChoosePath();
                 if (paths.Count < 2 && GameObject.Find("Path2") != null) {
                     GameObject.Find("Path2").SetActive(false);
@@ -143,18 +145,41 @@ public class TestScript : MonoBehaviour {
             GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
             GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
             GameObject.Find("EndText").GetComponentInChildren<Text>().color = Color.red;
+            changeStart.SetActive(true);
         } else {
             try {
-                paths = grid.confirmEnd();
+                grid.confirmEnd();
                 if (grid.isFirstSelected) {
                     return;
                 }
                 GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.start.x + "x-axis, " + grid.start.y + "y-axis";
+                paths = grid.Start();
             } catch (Exception e) {
                 MoveToNoPath();
                 print(e);
             }
         }
+    }
+
+    public void ChangeStart() {
+        if (paths != null) {
+            paths = null;
+            MoveToStart();
+            grid.delete_paths();
+
+        }
+        grid.isFirstSelected = false;
+        changeStart.SetActive(false);
+    }
+
+    public void ChangeEnd() {
+        if (paths != null) {
+            paths = null;
+            MoveToStart();
+            grid.delete_paths();
+        }
+        grid.isFirstSelected = true;
+        changeEnd.SetActive(false);
     }
 
     /*
@@ -313,6 +338,12 @@ public class TestScript : MonoBehaviour {
         check_user_path_action = true;
     }
 
+    public void MoveToStart() {
+        start.SetActive(true);
+        select_path.SetActive(false);
+        run.SetActive(true);
+        summary.SetActive(false);
+    }
 
     public void MoveToRun() {
         start.SetActive(false);
