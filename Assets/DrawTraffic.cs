@@ -94,7 +94,6 @@ public class DrawTraffic : MonoBehaviour {
         car = GameObject.FindWithTag(("Grid")).GetComponent<PathFollower>();
         if (car.path.Count > 1 && traffic != null) {
             grid.a_star.update_node_costs(this.path[index], cost, direction);
-            car.path.ForEach(p => print(p.position));
             List<MapNode> path = grid.a_star.find(car.path[0]);
             add_to_list(path);
             this.path = path;

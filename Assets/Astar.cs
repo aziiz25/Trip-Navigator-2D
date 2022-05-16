@@ -33,7 +33,8 @@ public class Astar {
             paths = yenKSP();
             cleanPath();
         } else {
-            throw new InvalidOperationException();
+            //throw new InvalidOperationException();
+            Debug.Log(start.down);
         }
     }
 
@@ -66,6 +67,9 @@ public class Astar {
             update_adj_nodes();
             add_to_close();
             if (size == open_queue.size || check_neighbours(closed[closed.Count - 1].Key)) {
+                if (closed[closed.Count - 1].Key.position == this.end.position) {
+                    continue;
+                }
                 return null;
             }
         }
@@ -138,7 +142,6 @@ public class Astar {
                 }
             }
         }
-        //path.Add(prev);
         return path;
     }
 
@@ -168,8 +171,8 @@ public class Astar {
         } else if (location == 2) {
             node.rightCost = cost;
             node.right.leftCost = cost;
-            node.rightSpeed -= node_to_update.rightSpeed *0.99f;
-            node.right.leftSpeed -= node_to_update.right.leftSpeed *0.99f;
+            node.rightSpeed -= node_to_update.rightSpeed * 0.99f;
+            node.right.leftSpeed -= node_to_update.right.leftSpeed * 0.99f;
 
             node_to_update.rightCost = cost;
             node_to_update.right.leftCost = cost;
@@ -191,7 +194,7 @@ public class Astar {
     public void create_pair(MapNode node, MapNode from = null, double g_cost = 1000000, double f_cost = 1000000) {
         open_queue.Enqueue(node, from, g_cost, f_cost);
     }
-    
+
 
     // cost function  manhatten distance devided by max speed
     public double total_cost(MapNode node, double cost) {
@@ -209,19 +212,19 @@ public class Astar {
             MapNode prev = path[i - 1];
             MapNode curr = path[i];
             MapNode next = path[i + 1];
-            if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)){
+            if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)) {
                 prev.downCost = prev.downCost + curr.downCost;
                 path.RemoveAt(i);
                 i--;
-            } else if ((prev.position.x == next.position.x) && (prev.position.y <= next.position.y)){
+            } else if ((prev.position.x == next.position.x) && (prev.position.y <= next.position.y)) {
                 prev.upCost = prev.upCost + curr.upCost;
                 path.RemoveAt(i);
                 i--;
-            } else if ((prev.position.x > next.position.x) && (prev.position.y == next.position.y)){
+            } else if ((prev.position.x > next.position.x) && (prev.position.y == next.position.y)) {
                 prev.leftCost = prev.leftCost + curr.leftCost;
                 path.RemoveAt(i);
                 i--;
-            } else if ((prev.position.x <= next.position.x) && (prev.position.y == next.position.y)){
+            } else if ((prev.position.x <= next.position.x) && (prev.position.y == next.position.y)) {
                 prev.rightCost = prev.rightCost + curr.rightCost;
                 path.RemoveAt(i);
                 i--;
@@ -242,7 +245,7 @@ public class Astar {
     public List<List<MapNode>> get_paths() {
         return paths;
     }
-    
+
 
     public bool check_neighbours(MapNode start) {
         if (start.up == null && start.down == null && start.right == null && start.left == null) {

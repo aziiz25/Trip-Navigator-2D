@@ -94,7 +94,7 @@ public class GridArea {
 
 
     public void draw_paths(List<List<MapNode>> paths) {
-        if (paths.Count == 2 && path_drown.Count < 2) {
+        if (paths != null && path_drown.Count < 2) {
             Color[] color = { Color.green, Color.blue, Color.red };
             for (int i = 0; i < paths.Count; i++) {
                 path_drown.Add(new DrawPath(paths[i], color[i], this));
