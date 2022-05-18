@@ -33,6 +33,7 @@ public class TestScript : MonoBehaviour {
 
 
     bool check_user_path_action;
+    
 
 
     /*
@@ -74,7 +75,7 @@ public class TestScript : MonoBehaviour {
     // main loop of the program
     void Update() {
         try {
-            if (Input.GetMouseButtonDown(0) && IsStartActive()) {
+            if (Input.GetMouseButtonDown(0) && IsStartActive() && (!grid.isFirstSelected || !grid.isSecondSelected)) {
                 Vector3 mousePosition = GetMousePositionWorld();
                 if (mousePosition.y < -18) {
                     return;
@@ -142,24 +143,26 @@ public class TestScript : MonoBehaviour {
                 return;
             }
             GameObject.Find("StartText").GetComponentInChildren<Text>().text = grid.start.x + "x-axis, " + grid.start.y + "y-axis";
-            GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
-            GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
+            if (!grid.isSecondSelected) {
+                GameObject.Find("EndText").GetComponentInChildren<Text>().text = "Select Your End Point";
+            }
             GameObject.Find("EndText").GetComponentInChildren<Text>().color = Color.red;
+            GameObject.Find("EndText").GetComponentInChildren<Text>().fontSize = 48;
             changeStart.SetActive(true);
         } else {
             try {
-                grid.confirmEnd();
-                if (grid.isFirstSelected) {
-                    return;
-                }
-                GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.start.x + "x-axis, " + grid.start.y + "y-axis";
+                if (grid.isFirstSelected && grid.isSecondSelected){
                 paths = grid.Start();
+                }
+                grid.confirmEnd();
+                GameObject.Find("EndText").GetComponentInChildren<Text>().text = grid.end.x + "x-axis, " + grid.end.y + "y-axis";
+                changeEnd.SetActive(true);
             } catch (Exception e) {
                 MoveToNoPath();
                 print(e);
             }
         }
-    }
+    } 
 
     public void ChangeStart() {
         if (paths != null) {
@@ -178,7 +181,7 @@ public class TestScript : MonoBehaviour {
             MoveToStart();
             grid.delete_paths();
         }
-        grid.isFirstSelected = true;
+        grid.isSecondSelected = false;
         changeEnd.SetActive(false);
     }
 
@@ -232,10 +235,10 @@ public class TestScript : MonoBehaviour {
     // showning cost to the user when he tries to choose a path
     public void CalculateCosts() {
         float costPath1 = car.CalculateExpectedArriveTime(paths[0]);
-        GameObject.Find("Path1").GetComponentInChildren<Text>().text = "Green\nTime:  " + (int)costPath1 + " mins";
+        GameObject.Find("Path1").GetComponentInChildren<Text>().text = "Green\nTime: " + Math.Floor(costPath1) + " mins";
         if (paths.Count == 2) {
             float costPath2 = car.CalculateExpectedArriveTime(paths[1]);
-            GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime:  " + (int)costPath2 + " mins";
+            GameObject.Find("Path2").GetComponentInChildren<Text>().text = "Blue\nTime: " + Math.Ceiling(costPath2) + " mins";
         }
     }
 
@@ -244,7 +247,13 @@ public class TestScript : MonoBehaviour {
         if (car.path != null) {
             double dis = car.CalculateRemainingDistance();
             double speed = car.speed;
+            double avgSpeed = car.CalculateAVGSpeed();
             double time = dis / speed;
+            if(speed < avgSpeed){
+                time = dis/avgSpeed;
+            }
+           
+            
             if ((int)time > 0) {
                 GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().text = (int)time + " min";
                 GameObject.Find("ArrivalTime").GetComponentInChildren<Text>().fontSize = 48;
@@ -341,7 +350,7 @@ public class TestScript : MonoBehaviour {
     public void MoveToStart() {
         start.SetActive(true);
         select_path.SetActive(false);
-        run.SetActive(true);
+        run.SetActive(false);
         summary.SetActive(false);
     }
 

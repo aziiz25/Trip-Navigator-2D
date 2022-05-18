@@ -61,7 +61,7 @@ public class PathFollower : MonoBehaviour {
             end = get_position(grid.end);
             player.transform.position = start;
         }
-        if (!grid.isFirstSelected) {
+        if (grid.isFirstSelected && grid.isSecondSelected) {
             targetWayPoint = get_position(this.path[currentWayPoint].position);
             maxSpeed = getSpeed(currentWayPoint);
             move();
@@ -211,9 +211,6 @@ public class PathFollower : MonoBehaviour {
         return p;
     }
 
-    public void CalculatePassedDistance() {
-
-    }
 
     public float CalculateAVGSpeed() {
         return CalculateAVGSpeed(this.path);
