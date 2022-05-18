@@ -213,19 +213,19 @@ public class Astar {
             MapNode curr = path[i];
             MapNode next = path[i + 1];
             if ((prev.position.x == next.position.x) && (prev.position.y > next.position.y)) {
-                prev.downCost = prev.downCost + curr.downCost;
+                //prev.downCost = prev.downCost + curr.downCost;
                 path.RemoveAt(i);
                 i--;
             } else if ((prev.position.x == next.position.x) && (prev.position.y <= next.position.y)) {
-                prev.upCost = prev.upCost + curr.upCost;
+                //prev.upCost = prev.upCost + curr.upCost;
                 path.RemoveAt(i);
                 i--;
             } else if ((prev.position.x > next.position.x) && (prev.position.y == next.position.y)) {
-                prev.leftCost = prev.leftCost + curr.leftCost;
+                //prev.leftCost = prev.leftCost + curr.leftCost;
                 path.RemoveAt(i);
                 i--;
             } else if ((prev.position.x <= next.position.x) && (prev.position.y == next.position.y)) {
-                prev.rightCost = prev.rightCost + curr.rightCost;
+                //prev.rightCost = prev.rightCost + curr.rightCost;
                 path.RemoveAt(i);
                 i--;
             }

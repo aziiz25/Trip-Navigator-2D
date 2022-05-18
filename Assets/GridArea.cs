@@ -12,6 +12,7 @@ public class GridArea {
     public float cellSize;
     private Vector3 originPosition;
     public bool isFirstSelected;
+    public bool isSecondSelected;
     float cost;
 
 
@@ -82,11 +83,9 @@ public class GridArea {
     }
 
     public void confirmEnd() {
-        if (!is_red_dot_moved) {
-            return;
+        if (is_red_dot_moved) {
+            isSecondSelected = true;
         }
-        isFirstSelected = false;
-        return;
     }
 
     public List<List<MapNode>> Start() {
