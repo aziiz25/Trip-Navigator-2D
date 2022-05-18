@@ -274,7 +274,7 @@ public class TestScript : MonoBehaviour {
             double time = car.timer;
             double dis = car.CalculateTotalDistance();
             double speed = dis / time;
-            GameObject.Find("Duration").GetComponentInChildren<Text>().text = (int)time + " min";
+            GameObject.Find("Duration").GetComponentInChildren<Text>().text = time.ToString("0.00 min");
             GameObject.Find("TotatlDistance").GetComponentInChildren<Text>().text = dis.ToString("0.00 km");
             GameObject.Find("AVGSpeed").GetComponentInChildren<Text>().text = speed.ToString("0.00 km/min");
         }
